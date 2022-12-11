@@ -65,6 +65,12 @@
         ~~~
         $xm6g.exe XXX.2HD
         ~~~
+## [ソフトウエアライブラリ](http://retropc.net/x68000/software/)
+- [GCC](http://retropc.net/x68000/software/develop/c/gcc_mariko/)
+- [HAS](http://retropc.net/x68000/software/develop/as/has060/)
+- [HLK](http://retropc.net/x68000/software/develop/lk/hlkev/)
+- [XC](http://retropc.net/x68000/software/sharp/xc21/)
+
 ## [クロス開発](https://github.com/yosshin4004/xdev68k)
 - XM6 で実行
     - (XM6 上から) Msys のディレクトリへ移動しておく
