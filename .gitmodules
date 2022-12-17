@@ -1,3 +1,6 @@
 [submodule "xdev68k"]
 	path = xdev68k
 	url = https://github.com/yosshin4004/xdev68k.git
+[submodule "x68k_xsp"]
+	path = x68k_xsp
+	url = https://github.com/yosshin4004/x68k_xsp.git

@@ -59,17 +59,56 @@
         ~~~
         $dir d:
         ~~~
+
+- [キーボード設定](http://retropc.net/x68000/software/system/key/keywitch/)
+    - KEYWB213.LZH を展開する - KeyWEnv.Lzh を展開する
+    - KeyWitch.x, ascii.env(英語キーボードの場合) を適当な場所へコピー
+        ~~~
+        $copy d:KeyWitch.x a:
+        $copy d:KeyWEnv\ascii.env a:
+        ~~~
+    - CONFIG.SYS に以下のように記述
+        ~~~
+        DEVICE=KeyWitch.x -e ascii.env
+        ~~~
+    - ファイル - リセットで再起動
+    - 一部のキーがおかしいのを修正
+        - ツール - オプション - キーボード - 編集
+
+### 使用
 - コマンドラインから起動
     - 予め switch コマンドで BOOT を STD へしておく
     - 以下のようにすれば指定のフロッピーで起動できるみたい
         ~~~
         $xm6g.exe XXX.2HD
         ~~~
-## [ソフトウエアライブラリ](http://retropc.net/x68000/software/)
-- [GCC](http://retropc.net/x68000/software/develop/c/gcc_mariko/)
-- [HAS](http://retropc.net/x68000/software/develop/as/has060/)
-- [HLK](http://retropc.net/x68000/software/develop/lk/hlkev/)
-- [XC](http://retropc.net/x68000/software/sharp/xc21/)
+- ソフトウエアキーボード
+    - ツール - ソフトウエアキーボード
+- ジョイスティック
+    - ツール - オプション - ジョイスティック - タイプ - ポート[12] から選択する
+
+<!--
+## BASIC
+- 起動
+    ~~~
+    $basic
+    ~~~
+- 終了
+    ~~~
+    $system
+    ~~~
+- 行番号付けなおし
+    ~~~
+    $renum
+    ~~~
+- コンフィグファイル
+    - BASIC2\BASIC.CONF
+- スプライトツール起動するには、BASIC内で以下のようにする
+    ~~~
+    $load "a:\etc\defsptool"
+    $run
+    ~~~
+!-->
 
 ## [クロス開発](https://github.com/yosshin4004/xdev68k)
 - XM6 で実行
@@ -82,3 +121,12 @@
         ~~~
         $MAIN.X
         ~~~
+- This software includes the work that is distributed in the Apache License 2.0.
+
+## リンク
+- [X68000ライブラリ](http://retropc.net/x68000/)
+- [GCC](http://retropc.net/x68000/software/develop/c/gcc_mariko/)
+- [HAS](http://retropc.net/x68000/software/develop/as/has060/)
+- [HLK](http://retropc.net/x68000/software/develop/lk/hlkev/)
+- [XC](http://retropc.net/x68000/software/sharp/xc21/)
+- [IOCS](https://datacrystal.romhacking.net/wiki/X68k:IOCS)
