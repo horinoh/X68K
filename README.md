@@ -85,8 +85,82 @@
 - ソフトウエアキーボード
     - ツール - ソフトウエアキーボード
 - ジョイスティック
-    - ツール - オプション - ジョイスティック - タイプ - ポート[12] から選択する
+    - コントローラを刺す
+    - ツール - オプション - ジョイスティック - タイプ - (例えば)ポート1、デバイスA のプルダウンから選択する
 
+### C
+- アセンブラ、リンカ
+    - [HAS](http://retropc.net/x68000/software/develop/as/has/)
+    - [HLK](http://retropc.net/x68000/software/develop/lk/hlkev/)
+        - HAS, HLK はパスの通っている A:\BIN に配置することにした
+- コンパイラ
+    - A:\CC を作り、ここに配置することにした
+        - A:\CC は path に通しておく
+    - [GCC](http://retropc.net/x68000/software/develop/c/gcc_mariko/)
+        - GCC142 の中身を A:\CC へコピー
+    - [XC](http://retropc.net/x68000/software/sharp/xc21/)
+        - システムディスク 1 の BIN\AR.X, LIB.X を A:\BIN へコピー
+        - システムディスク 2 の INCLUDE, LIB を A:\CC\INCLUDE, A:\CC\LIB へコピー
+            - INCLUDE
+                - DOSCALL.MAC をコピーして DOSCALL.EQU を作っておく
+    - [gnulib](https://www.vector.co.jp/soft/dl/x68/prog/se023312.html)
+        - libgnu.a を取得
+            - オブジェクトファイルリストを得る
+                ~~~
+                $ar /l libgnu.a
+                ~~~
+            - オブジェクトファイルを抽出
+                ~~~
+                $ar /x libgnu.a XXX.o
+                ~~~
+            - libgnu.l への追加
+                ~~~
+                $lib /u gnulib.l XXX.o
+                ~~~
+        - gnulib.l を A:\CC\LIB へコピー
+    
+- 共通
+    ~~~
+    rem インクルード、ライブラリパス、拡張子
+    set include=A:\CC\INCLUDE
+    set lib=A:\CC\LIB
+    set GCC_LIB=.l
+
+    rem アセンブラ、オプション
+    set GCC_AS=has.x
+    set HAS=-u -z
+
+    rem リンカ (オプションは別途)
+    set GCC_LINK=hlk.r
+
+    rem GCC オプション
+    set GCC_OPTION=AEFGILMTW+
+
+    rem x68000 版 GCC の拡張
+    set MARIKO=ABD
+
+    rem テキストエディタ
+    rem set MARINA=SUPERED
+    ~~~
+- LIBC
+    ~~~
+    rem リンカオプション
+    set SILK=-l
+
+    set GCC_NO_XCLIB=yes
+    ~~~
+- XC
+    ~~~
+    rem リンカオプション
+    set SILK=-l floatfnc.l
+
+    set GCC_NO_XCLIB=
+    ~~~
+- コンパイル
+    ~~~
+    $gcc -O main.c
+    ~~~
+    
 <!--
 ## BASIC
 - 起動
