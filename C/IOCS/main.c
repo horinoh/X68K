@@ -3,6 +3,8 @@
 
 #define COUNTOF(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 
+#define ESC_ON (BITSNS(0) & (1 << 1))
+
 enum
 {
   Mode_1024_512X512_C16_P1_31KHZ,
@@ -54,6 +56,13 @@ enum
 #define TO_SCANCODE(_KeyCode) ((_KeyCode & 0xff00) >> 8)
 #define TO_INTERNALCODE(_KeyCode) (_KeyCode & 0xff)
 
+#define JOY_UP (1 << 0)
+#define JOY_DOWN (1 << 1)
+#define JOY_LEFT (1 << 2)
+#define JOY_RIGHT (1 << 3)
+#define JOY_A (1 << 5)
+#define JOY_B (1 << 6)
+
 void main()
 {
   const short PrevCRTMode = CRTMOD(-1);
@@ -78,6 +87,9 @@ void main()
 
     printf("Press any key\n");
     B_KEYINP();
+
+    //!< コンソールクリア
+    puts("\e[1;1H\e[2J");
   }
 
  /*
@@ -102,15 +114,20 @@ void main()
   */ 
   while(1) {
     //!< ESC (グループ0, ビット (1 << 1)) が押された
-    if(BITSNS(0) & (1 << 1)) { break; }
+    if(ESC_ON) { break; }
    
-    //!< コンソールクリア
-    puts("\e[1;1H\e[2J");
+    B_LOCATE(0, 0);
     puts("Press ESC to exit");
     //!< 臣下状態の表示
     for(int i = 0; i < 16; ++i) {
-      printf("Group=0x%x, Bits=0x%02x\n", i, BITSNS(i));
+      printf("\tGroup=0x%x, Bits=0x%02x\n", i, BITSNS(i));
     }
+
+    //!< 0 の時に ON なので注意
+    const int Joy = JOYGET(0);
+    printf(" %s\n", (Joy & JOY_UP) ? "-" : "o");
+    printf("%s  %s\n", (Joy & JOY_LEFT) ? "-" : "o", (Joy & JOY_RIGHT) ? "-" : "o");
+    printf(" %s      %s %s\n", (Joy & JOY_DOWN) ? "-" : "o", (Joy & JOY_B) ? "-" : "o", (Joy & JOY_A) ? "-" : "o");
 
     #if 0
     //!< ScanCode = Group << 3 | Bit

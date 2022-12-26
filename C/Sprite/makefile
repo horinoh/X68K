@@ -1,5 +1,5 @@
 # 実行ファイル名
-TARGET_FILE = HELLO.X
+TARGET_FILE = SPRITE.X
 
 # *.c ソースファイル
 C_SRCS = main.c
@@ -8,6 +8,6 @@ C_SRCS = main.c
 ASM_SRCS = 
 
 # リンク対象のライブラリファイル
-LIBS =
+LIBS = 
 
 include ../makefile

@@ -27,7 +27,7 @@ COMMON_FLAGS = -m68000 -Os $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
 
 # リンク対象のライブラリファイル
-LIBS =\
+LIBS +=\
 	${XDEV68K_DIR}/lib/xc/BASLIB.L \
 	${XDEV68K_DIR}/lib/xc/CLIB.L \
 	${XDEV68K_DIR}/lib/xc/DOSLIB.L \

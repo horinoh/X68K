@@ -130,12 +130,13 @@
     set GCC_AS=has.x
     set HAS=-u -z
 
-    rem リンカ (オプションは別途)
+    rem リンカ、オプション
     set GCC_LINK=hlk.r
+    set SILK=-l
 
     rem GCC オプション
     set GCC_OPTION=AEFGILMTW+
-
+    
     rem x68000 版 GCC の拡張
     set MARIKO=ABD
 
@@ -144,22 +145,18 @@
     ~~~
 - LIBC
     ~~~
-    rem リンカオプション
-    set SILK=-l
-
     set GCC_NO_XCLIB=yes
     ~~~
 - XC
     ~~~
-    rem リンカオプション
-    set SILK=-l floatfnc.l
-
+    rem set SILK=-l floatfnc.l
     set GCC_NO_XCLIB=
     ~~~
 - コンパイル
     ~~~
-    $gcc -O main.c
+    $gcc -O main.c FLOATEML.L
     ~~~
+    - SRAND, ECVT, FCVT が無いと怒られたので FLOATEML.L を追加したら通った
     
 <!--
 ## BASIC
@@ -185,12 +182,16 @@
 !-->
 
 ## [クロス開発](https://github.com/yosshin4004/xdev68k)
+- [スプライト](https://github.com/yosshin4004/x68k_xsp)
+    - iocscall.inc が無いと怒られるので、コピーして iocsall.mac から iocscall.inc を作る
+        - iocsall.mac は xdev68k\include\xc\ 以下にある
 - XM6 で実行
     - (XM6 上から) Msys のディレクトリへ移動しておく
         ~~~
         $d:
         $cd XXX\xdev68k\example\hello
         ~~~
+    - Msys 上でコンパイル
     - (クロスコンパイルしてできた) .X ファイルがあると思うので実行する
         ~~~
         $MAIN.X

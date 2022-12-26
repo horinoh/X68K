@@ -7,4 +7,7 @@ C_SRCS = main.c
 # *.s ソースファイル
 ASM_SRCS = 
 
+# リンク対象のライブラリファイル
+LIBS =
+
 include ../makefile

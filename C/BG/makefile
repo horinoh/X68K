@@ -1,5 +1,5 @@
 # 実行ファイル名
-TARGET_FILE = HELLO.X
+TARGET_FILE = BG.X
 
 # *.c ソースファイル
 C_SRCS = main.c
