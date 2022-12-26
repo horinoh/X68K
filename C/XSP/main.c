@@ -58,13 +58,23 @@ void main()
 
     xsp_pcgdat_set(PCGData, PCGWork, sizeof(PCGWork));
 
+    //!< Metasprite
+    XOBJ_FRM_DAT MetaSpriteData[] = {
+      { .vx =  0, .vy =  0, .pt = 0, .rv = FLIP_NONE },
+      { .vx =  0, .vy = 16, .pt = 1, .rv = FLIP_NONE },
+      { .vx = 16, .vy =  0, .pt = 2, .rv = FLIP_NONE },
+      { .vx = 16, .vy = 16, .pt = 3, .rv = FLIP_NONE },
+    };
+    XOBJ_REF_DAT MetaSprite = { .num = COUNTOF(MetaSpriteData), .ptr = MetaSpriteData };
+    xsp_objdat_set(&MetaSprite);
+
     XSP_SET_ARG Sprites[] = {
       { .x = 128, .y = 128, .pt = 0, .info = CODE(FLIP_NONE, 0, 0) },
-      { .x = 128, .y = 128, .pt = 1, .info = CODE(FLIP_NONE, 0, 0) },
-      { .x = 128, .y = 128, .pt = 2, .info = CODE(FLIP_NONE, 0, 0) },
-      { .x = 128, .y = 128, .pt = 3, .info = CODE(FLIP_NONE, 0, 0) },
-      { .x = 128, .y = 128, .pt = 4, .info = CODE(FLIP_NONE, 0, 0) },
-      { .x = 128, .y = 128, .pt = 5, .info = CODE(FLIP_NONE, 0, 0) },
+      // { .x = 128, .y = 128, .pt = 1, .info = CODE(FLIP_NONE, 0, 0) },
+      // { .x = 128, .y = 128, .pt = 2, .info = CODE(FLIP_NONE, 0, 0) },
+      // { .x = 128, .y = 128, .pt = 3, .info = CODE(FLIP_NONE, 0, 0) },
+      // { .x = 128, .y = 128, .pt = 4, .info = CODE(FLIP_NONE, 0, 0) },
+      // { .x = 128, .y = 128, .pt = 5, .info = CODE(FLIP_NONE, 0, 0) },`
     };
 
     while (1)
@@ -73,26 +83,32 @@ void main()
       
       if(ESC_ON) { break; }
       
+      XSP_SET_ARG* Sp = &Sprites[0];
+      
       const int Joy = JOYGET(0);
-      if(!(Joy & JOY_UP)) { --Sprites[0].y; }
-      if(!(Joy & JOY_DOWN)) { ++Sprites[0].y; }
-      if(!(Joy & JOY_LEFT)) { --Sprites[0].x; }
-      if(!(Joy & JOY_RIGHT)) { ++Sprites[0].x; }
+      if(!(Joy & JOY_UP)) { --Sp->y; }
+      if(!(Joy & JOY_DOWN)) { ++Sp->y; }
+      if(!(Joy & JOY_LEFT)) { --Sp->x; }
+      if(!(Joy & JOY_RIGHT)) { ++Sp->x; }
       if(!(Joy & JOY_A)) { break; }
       if(!(Joy & JOY_B)) { break; }
-      if(UP_ON) { --Sprites[0].y; }
-      if(DOWN_ON) { ++Sprites[0].y; }
-      if(LEFT_ON) { --Sprites[0].x; }
-      if(RIGHT_ON) { ++Sprites[0].x; }
-      Sprites[0].x = MAX(MIN(Sprites[0].x, 0xff), 0);
-      Sprites[0].y = MAX(MIN(Sprites[0].y, 0xff), 0);
+      if(UP_ON) { --Sp->y; }
+      if(DOWN_ON) { ++Sp->y; }
+      if(LEFT_ON) { --Sp->x; }
+      if(RIGHT_ON) { ++Sp->x; }
+      Sp->x = MAX(MIN(Sp->x, 0xff), 0);
+      Sp->y = MAX(MIN(Sp->y, 0xff), 0);
 
-      B_LOCATE(0, 2);
-      printf("SP %03d, %03d\n", Sprites[0].x, Sprites[0].y);
-      
-      //xsp_set_st(&Sprites[0]);
+      //!< Put as sprite
+      //xsp_set_st(Sp);
+
+      //!< Put as metasprite
+      //xobj_set_st(Sp); 
 
       xsp_out();
+
+      B_LOCATE(0, 2);
+      printf("SP %03d, %03d\n", Sp->x, Sp->y);
     }
 
     xsp_off();

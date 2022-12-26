@@ -5,7 +5,6 @@
 #include "../Common.h"
 #include "../Palette.h"
 #include "../PCG.h"
-//#include "../Sprite.h"
 #include "../BG.h"
 #include "../Joy.h"
 
