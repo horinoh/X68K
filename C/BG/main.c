@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <iocslib.h>
 
-#include "../Common.h"
-#include "../Palette.h"
-#include "../PCG.h"
-#include "../BG.h"
-#include "../Joy.h"
+#include "Common.h"
+#include "Palette.h"
+#include "PCG.h"
+#include "BG.h"
+#include "Joy.h"
 
 //0, 0, 0, 1, 1, 0, 0, 0,
 //0, 0, 1, 1, 1, 1, 0, 0,

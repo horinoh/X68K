@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <iocslib.h>
 
-#include "../Common.h"
-#include "../Joy.h"
+#include "Common.h"
+#include "Joy.h"
 
 void main()
 {

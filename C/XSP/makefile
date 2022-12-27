@@ -4,6 +4,9 @@ TARGET_FILE = XSP.X
 # *.c ソースファイル
 C_SRCS = main.c
 
+# ヘッダ検索パス
+INCLUDE_FLAGS = -I../ -I../../x68k_xsp/XSP/
+
 # *.s ソースファイル
 ASM_SRCS = 
 

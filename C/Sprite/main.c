@@ -2,12 +2,12 @@
 #include <stdint.h>
 #include <iocslib.h>
 
-#include "../Common.h"
-#include "../Palette.h"
-#include "../PCG.h"
-#include "../Sprite.h"
-#include "../BG.h"
-#include "../Joy.h"
+#include "Common.h"
+#include "Palette.h"
+#include "PCG.h"
+#include "Sprite.h"
+#include "BG.h"
+#include "Joy.h"
 
 //0,0,0,0,0,1,1,1, 1,1,0,0,0,0,0,0,
 //0,0,0,0,1,1,1,1, 1,1,1,1,1,0,0,0,
@@ -85,13 +85,17 @@ void main()
   SPALET(2, 1, COL_YELLOW);
   SPALET(3, 1, COL_GRAY);
 
+  SPALET(1, 2, COL_WHITE);
+  SPALET(2, 2, COL_YELLOW);
+  SPALET(3, 2, COL_GREEN);
+
   //!< PCG
   SP_CGCLR(0);
   SP_DEFCG(0, PCG_PAT_16X16, &PCGData16X16[0]);
 
   //!< Sprite
   int SpPCG = 0;
-  int SpPal = 1;
+  int SpPal = 1; //= 2;
   int SpX = 128, SpY = 128;
   {
     SP_ON();
@@ -122,8 +126,6 @@ void main()
     if(RIGHT_ON) { ++SpX; }
     SpX = MAX(MIN(SpX, 0xff), 0);
     SpY = MAX(MIN(SpY, 0xff), 0);
-    SpPal &= 0xf;
-    SpPCG &= 0xff;
     SP_REGST(ON_VSYNC | 0, SpX, SpY, CODE(FLIP_NONE, SpPal, SpPCG), SP_PRI_FRONT);
 
     //SPALET(ON_VSYNC | 0, 0, XXX);

@@ -19,7 +19,7 @@ HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
 
 # ヘッダ検索パス
-INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc
+INCLUDE_FLAGS += -I${XDEV68K_DIR}/include/xc
 
 
 # コンパイルフラグ

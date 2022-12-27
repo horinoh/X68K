@@ -2,14 +2,14 @@
 #include <stdint.h>
 #include <iocslib.h>
 
-#include "../../x68k_xsp/XSP/XSP2lib.H"
+#include "XSP2lib.H"
 
-#include "../Common.h"
-#include "../Palette.h"
-#include "../PCG.h"
-#include "../Sprite.h"
-#include "../BG.h"
-#include "../Joy.h"
+#include "Common.h"
+#include "Palette.h"
+#include "PCG.h"
+#include "Sprite.h"
+#include "BG.h"
+#include "Joy.h"
 
 uint64_t PALData[PAL_BLOCK_COUNT][PAL_COLOR_COUNT];
 uint8_t	PCGData[PCG_16X16_COUNT][PCG_16X16_SIZE];
