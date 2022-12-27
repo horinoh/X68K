@@ -51,10 +51,11 @@ enum
 
  //!< GGGG GRRR RRBB BBB0
 #define RGB(_R, _G, _B) (((_G & 0x1f) << 11) | ((_R & 0x1f) << 6) | ((_B & 0x1f) << 1))
+#define COL_TRANSPARENT RGB(0, 0, 0)
+#define COL_BLACK RGB(1, 1, 1)
 #define COL_RED RGB(31, 0, 0)
 #define COL_GREEN RGB(0, 31, 0)
 #define COL_BLUE RGB(0, 0, 31)
-#define COL_BLACK RGB(0, 0, 0)
 #define COL_WHITE RGB(31, 31, 31)
 #define COL_YELLOW RGB(31, 31, 0)
 #define COL_GRAY RGB(15, 15, 15)

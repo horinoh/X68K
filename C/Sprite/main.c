@@ -79,11 +79,11 @@ void main()
   G_CLR_ON(); 
   SP_INIT();
 
-  //!< Palette
-  SPALET(0, 1, COL_BLACK);
+  //!< Palette ... Block no is [1, 15] 0 is not used
+  //SPALET(0, 1, ); //!< Transparent ?
   SPALET(1, 1, COL_RED);
   SPALET(2, 1, COL_YELLOW);
-  SPALET(3, 1, COL_BLACK);
+  SPALET(3, 1, COL_GRAY);
 
   //!< PCG
   SP_CGCLR(0);

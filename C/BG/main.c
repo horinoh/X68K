@@ -60,8 +60,9 @@ void main()
   SP_INIT();
   
   //!< Palette
-  SPALET(0, 1, COL_BLACK);
-  SPALET(1, 1, COL_RED);
+  //SPALET(0, 1, XXX); //!< Transparent ?
+  SPALET(1, 1, COL_YELLOW);
+  SPALET(1, 2, COL_RED);
 
   //!< PCG
   SP_CGCLR(0);
@@ -73,14 +74,14 @@ void main()
 
   //!< BG
   int BG0PCG = 128, BG1PCG = 129;
-  int BG0Pal = 1, BG1Pal = 1;
+  int BG0Pal = 1, BG1Pal = 2;
   int Bg0X = 0, Bg0Y = 0;
   int Bg1X = 0, Bg1Y = 0;
   {
     //!< BG0 PAGE0 ONOFF
     BGCTRLST(0, 0, BG_ON);
     //!< BG1 PAGE1 ONOFF
-	  BGCTRLST(1, 1, BG_OFF);
+	  BGCTRLST(1, 1, BG_ON);
 
     //!< Clear map
     BGTEXTCL(0, 0); 
@@ -88,8 +89,8 @@ void main()
     //!< Set map
     for (int i = 0; i < BG_HEIGHT; ++i) {
       for (int j = 0; j < BG_WIDTH; ++j) {
-        BGTEXTST(0, j, i, CODE(FLIP_NONE, BG0Pal, BG0PCG)); 
-        BGTEXTST(1, j, i, CODE(FLIP_NONE, BG1Pal, BG1PCG)); 
+        if(i & 1) BGTEXTST(0, j, i, CODE(FLIP_NONE, BG0Pal, BG0PCG)); 
+        if(j & 1) BGTEXTST(1, j, i, CODE(FLIP_NONE, BG1Pal, BG1PCG)); 
       }
     }
 
