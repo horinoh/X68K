@@ -198,6 +198,39 @@
         ~~~
 - This software includes the work that is distributed in the Apache License 2.0.
 
+## サウンド
+<!--
+- [ツール]((http://retropc.net/x68000/software/sound/zmusic/zmusic3/))
+    - 展開して A: に配置した
+        - 再生
+            ~~~
+            $ZMSC3
+            $ZMC -L
+            $ZP3 <filename>.[ZMS, ZMD]
+            ~~~
+!-->
+- [ライブラリ] (http://www.z-z-z.jp/zmusic/library/Zm302_l.lzh)
+    - 展開
+        - エミュレータ上でコンパイル (無反応に見えるが中断せずに完了を待つ)
+            ~~~
+            $cd Zm302_l
+            $MAKE
+            ~~~
+        - (ここでは) Zm302_l フォルダとして配置した
+            - ZMSC3LIB.H はコンパイルでコケるので、ファイル末尾の文字を削除した
+            ~~~
+            Zm302_l/ZMSC3LIB.H
+            Zm302_l/ZMSC3LIB.L
+            ~~~
+
+## 他
+- サブモジュール更新に失敗する場合
+    - サブモジュールの更新が origin/master 前提になっているのが原因、origin/main 等になっているサブモジュールだと更新に失敗してしまう
+    - .gitmodules を開き、対象のサブモジュールの所に以下のように追記
+        ~~~
+        branch = main 
+        ~~~
+
 ## リンク
 - [X68000ライブラリ](http://retropc.net/x68000/)
 - [GCC](http://retropc.net/x68000/software/develop/c/gcc_mariko/)
@@ -205,3 +238,4 @@
 - [HLK](http://retropc.net/x68000/software/develop/lk/hlkev/)
 - [XC](http://retropc.net/x68000/software/sharp/xc21/)
 - [IOCS](https://datacrystal.romhacking.net/wiki/X68k:IOCS)
+- [ZMUSIC](http://www.z-z-z.jp/zmusic/library/ZM3DLPG.htm)

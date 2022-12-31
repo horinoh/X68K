@@ -3,6 +3,7 @@
 #define COUNTOF(_Array) sizeof(_Array) / sizeof(_Array[0])
 #define MIN(_Lhs, _Rhs) (_Lhs < _Rhs ? _Lhs : _Rhs)
 #define MAX(_Lhs, _Rhs) (_Lhs > _Rhs ? _Lhs : _Rhs)
+#define CLAMP(_Val, _Min, _Max) MAX(MIN(_Val, _Max), _Min)
 
 enum 
 {
@@ -61,6 +62,13 @@ enum
 #define COL_GRAY RGB(15, 15, 15)
 #define COL_MAGENTA RGB(31, 0, 31)
 #define COL_PURPLE RGB(15, 0, 15)
+#define COL_NAVY RGB(0, 0, 15)
+#define COL_AQUA RGB(0, 31, 31)
+#define COL_MAROON RGB(15, 0, 0)
+#define COL_LIME RGB(0, 31, 0)
+#define COL_SILVER RGB(23, 23, 23)
+#define COL_OLIVE RGB(15, 15, 0)
+
 //!<  H
 //!<    [  0,  31] Red - Yellow
 //!<    [ 32,  63] Yellow - Green

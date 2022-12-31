@@ -108,7 +108,7 @@ void main()
     //!< BG0 PAGE0 ONOFF
     BGCTRLST(0, 0, BG_OFF);
     //!< BG1 PAGE1 ONOFF
-	  BGCTRLST(1, 1, BG_OFF);
+    BGCTRLST(1, 1, BG_OFF);
   }
 
   while (1)
@@ -124,8 +124,10 @@ void main()
     if(DOWN_ON) { ++SpY; }
     if(LEFT_ON) { --SpX; }
     if(RIGHT_ON) { ++SpX; }
-    SpX = MAX(MIN(SpX, 0xff), 0);
-    SpY = MAX(MIN(SpY, 0xff), 0);
+    SpX = CLAMP(SpX, 0, 0xff);
+    SpY = CLAMP(SpY, 0, 0xff);
+    //SpX = MAX(MIN(SpX, 0xff), 0);
+    //SpY = MAX(MIN(SpY, 0xff), 0);
     SP_REGST(ON_VSYNC | 0, SpX, SpY, CODE(FLIP_NONE, SpPal, SpPCG), SP_PRI_FRONT);
 
     //SPALET(ON_VSYNC | 0, 0, XXX);

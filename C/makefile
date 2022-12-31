@@ -21,7 +21,6 @@ HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
 # ヘッダ検索パス
 INCLUDE_FLAGS += -I${XDEV68K_DIR}/include/xc
 
-
 # コンパイルフラグ
 COMMON_FLAGS = -m68000 -Os $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
