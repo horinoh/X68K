@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdio.h>
+#include <stdint.h>
+
 enum {
     SAMPLING_3_9KHZ,
     SAMPLING_5_2KHZ,
@@ -38,6 +41,20 @@ enum {
 };
 
 //!< ZMUSIC
+enum {
+    ZM_ERROR_MODE_SCREEN,
+    ZM_ERROR_MODE_BUFFER,
+};
+enum {
+    ZM_ERROR_LANG_EN,
+    ZM_ERROR_LANG_JP,
+};
+enum {
+    ZM_QUERY = -1,
+    ZM_UNOCCUPY = 0,
+    ZM_OCCUPY = 1,
+};
+
 #define ZM_HOUR(_Time) ((_Time & 0x00ff0000) >> 16)
 #define ZM_MiNUTE(_Time) ((_Time & 0x0000ff00) >> 8)
 #define ZM_SECOND(_Time) (_Time & 0x000000ff)
@@ -54,3 +71,33 @@ enum {
 //!< Return value of zm_tempo(), zm_set_timer_value(), ...
 #define ZM_TIMER(_Val) ((_Val & 0xffff0000) >> 16)
 #define ZM_TEMPO(_Val) (_Val & 0x0000ffff)
+
+#define ZMD_HEADER "ZmuSic0"
+#define ZMD_HEADER_SIZE sizeof(ZMD_HEADER)
+#define ZMD_HEADER_SKIP(_Data) (_Data + ZMD_HEADER_SIZE)
+#define ZM_TO_INTERNAL_BUFFER 0
+
+void PrintTable(const int8_t* Table)
+{
+    printf("{ ");
+    int i = 0;
+    do {
+        printf("%d, ", Table[i]);
+    } while(-1 != Table[i++]);
+    puts(" }");
+}
+
+enum {
+    ZM_ON_PLAY = 1 << 0,
+    ZM_ON_STOP = 1 << 1,
+    ZM_ON_CONT = 1 << 2,
+    ZM_ON_END = 1 << 3,
+  
+    ZM_LOOP_COUNT = 1 << 4,
+    ZM_ON_LOOP = 1 << 5,
+  
+    ZM_CLOCK_COUNT = 1 << 6,
+    ZM_ON_CLOCK = 1 << 7,
+};
+
+#include "ZM_STAT.h"

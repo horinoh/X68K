@@ -199,16 +199,23 @@
 - This software includes the work that is distributed in the Apache License 2.0.
 
 ## サウンド
-<!--
 - [ツール]((http://retropc.net/x68000/software/sound/zmusic/zmusic3/))
     - 展開して A: に配置した
         - 再生
             ~~~
+            //!< 予めやっておく必要がある
             $ZMSC3
             $ZMC -L
-            $ZP3 <filename>.[ZMS, ZMD]
+
+            //!< 再生
+            $ZP3 XXX.[ZMS, ZMD]
+            //!< 停止
+            $ZP3 -s
+            //!< トラック情報表示
+            $ZP3 -q
+            //!< ステータス表示 (ESCで終了)
+            $ZSV
             ~~~
-!-->
 - [ライブラリ] (http://www.z-z-z.jp/zmusic/library/Zm302_l.lzh)
     - 展開
         - エミュレータ上でコンパイル (無反応に見えるが中断せずに完了を待つ)

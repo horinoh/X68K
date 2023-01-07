@@ -1,9 +1,33 @@
 #pragma once
+#include <stdlib.h>
 
 #define COUNTOF(_Array) sizeof(_Array) / sizeof(_Array[0])
 #define MIN(_Lhs, _Rhs) (_Lhs < _Rhs ? _Lhs : _Rhs)
 #define MAX(_Lhs, _Rhs) (_Lhs > _Rhs ? _Lhs : _Rhs)
 #define CLAMP(_Val, _Min, _Max) MAX(MIN(_Val, _Max), _Min)
+
+static fpos_t  GetFileSize(FILE* Fp)
+{
+  fpos_t Size = 0;
+  if(NULL != Fp) {
+    if (0 == fseek(Fp, 0, SEEK_END)) {
+        if (0 == fgetpos(Fp, &Size)) {
+          if (0 != fseek(Fp, 0, SEEK_SET)) { puts("fseek(SEEK_SET) failed"); }
+        }
+        else { puts("fgetpos failed"); }
+      }
+      else { puts("fseek(SEEK_END) failed"); }
+  }
+  return Size;
+}
+static fpos_t LoadFile(FILE* Fp)
+{
+  const fpos_t Size = GetFileSize(Fp);
+  if(Size) {
+
+  }
+  return Size;
+}
 
 enum 
 {
@@ -130,6 +154,23 @@ enum {
 #define RIGHT_ON IS_ON(7, 5)
 #define DOWN_ON IS_ON(7, 6)
 
+#define ONE_ON IS_ON(0, 2)
+#define TWO_ON IS_ON(0, 3)
+#define THREE_ON IS_ON(0, 4)
+#define FOUR_ON IS_ON(0, 5)
+#define FIVE_ON IS_ON(0, 6)
+#define SIX_ON IS_ON(0, 7)
+#define SEVEN_ON IS_ON(1, 0)
+#define EIGHT_ON IS_ON(1, 1)
+#define NINE_ON IS_ON(1, 2)
+#define ZERO_ON IS_ON(1, 3)
+
+#define E_ON IS_ON(2, 3)
+#define T_ON IS_ON(2, 5)
+#define P_ON IS_ON(3, 2)
+#define A_ON IS_ON(3, 6)
+#define S_ON IS_ON(3, 7)
+#define Z_ON IS_ON(5, 2)
 #define X_ON IS_ON(5, 3)
 #define C_ON IS_ON(5, 4)
 
