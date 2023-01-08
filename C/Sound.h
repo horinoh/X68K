@@ -40,6 +40,7 @@ enum {
     OPM_BUSY = 1 << 7,
 };
 
+#pragma ZMUSIC
 //!< ZMUSIC
 enum {
     ZM_ERROR_MODE_SCREEN,
@@ -101,3 +102,5 @@ enum {
 };
 
 #include "ZM_STAT.h"
+
+#pragma endregion //!< ZMUSIC

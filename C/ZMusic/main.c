@@ -75,20 +75,17 @@ void main(int argc, char* argv[])
   }
 
   //!< Version
-  {
-    B_LOCATE(0, 1);
-    int ZmVer = zm_check_zmsc();
-    if(-1 == ZmVer) {
-      puts("Run ZMSC3 in advance\n");
-      return;
-    }
-    printf("ZmVer = 0x%0x, LibVer = %d\n", ZmVer, zm_get_zmlibver());
+  B_LOCATE(0, 1);
+  if(-1 == zm_check_zmsc()) {
+    puts("Run ZMSC3 in advance\n");
+    return;
   }
+  printf("ZmVer = 0x%0x, LibVer = %d\n", zm_ver(), zm_get_zmlibver());
 
   //!< Initialize
   zm_init(0);
 
-#pragma region EVENTS
+  #pragma region EVENTS
   {
     int Events[] = {
       (int)OnPlay,
@@ -100,9 +97,9 @@ void main(int argc, char* argv[])
     };
     zm_obtain_events(ZM_ON_PLAY | ZM_ON_STOP | ZM_ON_CONT | ZM_ON_END | (ZM_LOOP_COUNT | ZM_ON_LOOP) | (ZM_CLOCK_COUNT | ZM_ON_CLOCK), Events);
   }
-#pragma endregion
+  #pragma endregion
 
-#pragma region ZMD
+  #pragma region ZMD
   //!< Load ZMD files (arguments)
   struct ZMDEntry* ZMDs = (struct ZMDEntry *)calloc(argc - 1 + 1, sizeof(*ZMDs));
   int ZMDIndexMax = 0;
@@ -130,7 +127,7 @@ void main(int argc, char* argv[])
     return;
   }
   int ZMDIndex = 0, ZMDPrevIndex = 0;
-#pragma endregion
+  #pragma endregion
 
   OnZMDChange(&ZMDs[0]);
 
@@ -138,6 +135,7 @@ void main(int argc, char* argv[])
   short TrackStatus[65535 + 1];
 
   short Track[] = { 0, -1 };
+  
   while(1) {
     if(P_ON) { zm_play_all(); }
     if(S_ON) { zm_stop_all(); }
