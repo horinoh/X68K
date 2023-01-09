@@ -148,6 +148,8 @@ enum {
 #define IS_ON(_Grp, _Bit) (BITSNS(_Grp) & (1 << _Bit))
 
 #define ESC_ON IS_ON(0, 1)
+#define TAB_ON IS_ON(2, 0)
+#define SPACE_ON IS_ON(6, 5)
 
 #define LEFT_ON IS_ON(7, 3)
 #define UP_ON IS_ON(7, 4)
@@ -173,6 +175,3 @@ enum {
 #define Z_ON IS_ON(5, 2)
 #define X_ON IS_ON(5, 3)
 #define C_ON IS_ON(5, 4)
-
-#define TAB_ON IS_ON(2, 0)
-#define SPACE_ON IS_ON(6, 5)

@@ -65,9 +65,14 @@ enum {
 #define ZM_DEV_MIDI1 0x8000
 #define ZM_DEV_MIDI2 0x8001
 #define ZM_DEV_MIDI3 0x8002
-#define ZM_DEVICE(_Dev, _Ch) (((_Dev & 0xffff) << 16) | (_Ch & 0xffff))
-#define ZM_DEV(_ChId) ((_ChId & 0xffff0000) >> 16)
-#define ZM_CHANNEL(_ChId) (_ChId & 0xffff)
+#define ZM_SET_DEVICE_CHANNEL(_Dev, _Ch) (((_Dev & 0xffff) << 16) | (_Ch & 0xffff))
+#define ZM_GET_DEVICE(_ChId) ((_ChId & 0xffff0000) >> 16)
+#define ZM_GET_CHANNEL(_ChId) (_ChId & 0xffff)
+
+#define ZM_TRACK_MASK_OFF 0
+#define ZM_TRACK_REVERSE 1
+#define ZM_TRACK_MASK_ON -1
+#define ZM_TRACK_MASK(_Track, _Mask) ((_Track << 16) | _Mask)
 
 //!< Return value of zm_tempo(), zm_set_timer_value(), ...
 #define ZM_TIMER(_Val) ((_Val & 0xffff0000) >> 16)
@@ -102,5 +107,7 @@ enum {
 };
 
 #include "ZM_STAT.h"
+#include "ZM_LABEL.h"
+#include "ZM_COMMON.h"
 
 #pragma endregion //!< ZMUSIC

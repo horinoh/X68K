@@ -52,8 +52,8 @@ void OnZMDChange(const struct ZMDEntry* ZMD)
 {
   #if 1
   //!< Play 
-  //zm_play_zmd(ZMD->Size, ZMD_HEADER_SKIP(ZMD->Data));
-  zm_play_zmd(ZM_TO_INTERNAL_BUFFER, ZMD_HEADER_SKIP(ZMD->Data));
+  zm_play_zmd(ZMD->Size, ZMD_HEADER_SKIP(ZMD->Data));
+  //zm_play_zmd(ZM_TO_INTERNAL_BUFFER, ZMD_HEADER_SKIP(ZMD->Data));
   #else
   //!< Play se
   //zm_se_play(ZMD_HEADER_SKIP(ZMD->Data));
@@ -129,29 +129,58 @@ void main(int argc, char* argv[])
   int ZMDIndex = 0, ZMDPrevIndex = 0;
   #pragma endregion
 
+  // #pragma region MASK
+  // short ChannelMask[] = {
+  //   ZM_SET_DEVICE_CHANNEL(ZM_DEV_FM, 1),
+  //   ZM_SET_DEVICE_CHANNEL(ZM_DEV_FM, 3),
+  //   ZM_SET_DEVICE_CHANNEL(ZM_DEV_FM, 5),
+  //   ZM_SET_DEVICE_CHANNEL(ZM_DEV_FM, 7),
+  //   -1,
+  // };
+  // zm_mask_channels(ChannelMask); 
+
+  // short TrackMask[] = {
+  //   ZM_TRACK_MASK(0, ZM_TRACK_MASK_ON),
+  //   ZM_TRACK_MASK(2, ZM_TRACK_MASK_ON),
+  //   ZM_TRACK_MASK(4, ZM_TRACK_MASK_ON),
+  //   ZM_TRACK_MASK(6, ZM_TRACK_MASK_ON),
+  //   -1,
+  // };
+  // zm_mask_tracks(TrackMask);
+  // #pragma endregion
+
   OnZMDChange(&ZMDs[0]);
 
-  int ChannelStatus[16 + 1];
-  short TrackStatus[65535 + 1];
-
-  short Track[] = { 0, -1 };
-  
   while(1) {
     if(P_ON) { zm_play_all(); }
     if(S_ON) { zm_stop_all(); }
     if(C_ON) { zm_cont_all(); }
     if(ESC_ON) { zm_stop_all(); break; }
 
-    if(ONE_ON) { Track[0] = 1; zm_play(Track); }
-    if(TWO_ON) { Track[0] = 2; zm_play(Track); }
-    if(THREE_ON) { Track[0] = 3; zm_play(Track); }
-    if(FOUR_ON) { Track[0] = 4; zm_play(Track); }
-    if(FIVE_ON) { Track[0] = 5; zm_play(Track); }
-    if(SIX_ON) { Track[0] = 6; zm_play(Track); }
-    if(SEVEN_ON) { Track[0] = 7; zm_play(Track); }
-    if(EIGHT_ON) { Track[0] = 8; zm_play(Track); }
-    if(NINE_ON) { Track[0] = 9; zm_play(Track); }
-    if(ZERO_ON) { Track[0] = 0; zm_play(Track); }
+    #if 1
+    if(ONE_ON) { zm_solo_track(1); }
+    if(TWO_ON) { zm_solo_track(2); }
+    if(THREE_ON) { zm_solo_track(3); }
+    if(FOUR_ON) { zm_solo_track(4); }
+    if(FIVE_ON) { zm_solo_track(5); }
+    if(SIX_ON) { zm_solo_track(6); }
+    if(SEVEN_ON) { zm_solo_track(7); }
+    if(EIGHT_ON) { zm_solo_track(8); }
+    if(NINE_ON) { zm_solo_track(9); }
+    if(ZERO_ON) { zm_solo_track(0); }
+    #else
+    if(ONE_ON || TWO_ON || THREE_ON || FOUR_ON || FIVE_ON || SIX_ON || SEVEN_ON || EIGHT_ON || NINE_ON || ZERO_ON) { zm_stop_all(); }
+    if(ONE_ON) { short Track[] = { 1, -1 }; zm_play(Track); }
+    if(TWO_ON) { short Track[] = { 2, -1 }; zm_play(Track); }
+    if(THREE_ON) { short Track[] = { 3, -1 }; zm_play(Track); }
+    if(FOUR_ON) { short Track[] = { 4, -1 }; zm_play(Track); }
+    if(FIVE_ON) { short Track[] = { 5, -1 }; zm_play(Track); }
+    if(SIX_ON) { short Track[] = { 6, -1 }; zm_play(Track); }
+    if(SEVEN_ON) { short Track[] = { 7, -1 }; zm_play(Track); }
+    if(EIGHT_ON) { short Track[] = { 8, -1 }; zm_play(Track); }
+    if(NINE_ON) { short Track[] = { 9, -1 }; zm_play(Track); }
+    if(ZERO_ON) { short Track[] = { 0, -1 }; zm_play(Track); } 
+    #endif
 
     //!< Select ZMD
     if(UP_ON) {
@@ -167,7 +196,7 @@ void main(int argc, char* argv[])
       OnZMDChange(&ZMDs[ZMDIndex]);
     }
 
-    B_LOCATE(0, 10);
+    B_LOCATE(0, 5);
 
     //!< ZMD index now playing
     printf("ZMDIndex = %d / %d\n", ZMDIndex, ZMDIndexMax - 1);
@@ -190,20 +219,49 @@ void main(int argc, char* argv[])
       puts("");
     }
 
+    //!< Track work
+    {
+      puts("Track work");
+      #if 1
+      const struct track_work* Work = (const struct track_work*)zm_get_play_work(0);
+      #else
+      const struct track_work* Work = (const struct track_work*)zm_get_play_work_se(0);
+      #endif
+      if(NULL != Work) {
+        printf("\tp_step_time = %d\n", Work->p_step_time);
+        printf("\tp_track_stat = %d\n", Work->p_track_stat);
+        puts("");
+      }
+    }
+
+    //!< Buffer information
+    {
+      puts("Buffer information");
+      const struct buffer_information* Buffer = (const struct buffer_information*)zm_get_buffer_information();
+       if(NULL != Buffer) {
+        printf("\ttrk_buffer_top = %d\n", Buffer->trk_buffer_top);
+        printf("\ttrk_buffer_size = %d\n", Buffer->trk_buffer_size);
+        printf("\ttrk_buffer_end = %d\n", Buffer->trk_buffer_end);
+        puts("");
+      }
+    }
+
     //!< Track channel info
     {
       puts("Playing");
-  
+
       //!< Channel status
+      int ChannelStatus[16 + 1];  
       zm_play_status_all_ch(ChannelStatus);
       printf("\tChannel = { ");
       for(int i=0;i<COUNTOF(ChannelStatus);++i) {
         if(-1 == ChannelStatus[i]) { break; }
-        printf("%d(%d), ", ZM_CHANNEL(ChannelStatus[i]), ZM_DEV(ChannelStatus[i]));
+        printf("%d(%d), ", ZM_GET_CHANNEL(ChannelStatus[i]), ZM_GET_DEVICE(ChannelStatus[i]));
       }
       puts("}");
 
       //!< Track status
+      short TrackStatus[65535 + 1];
       zm_play_status_all_tr(TrackStatus);
       printf("\tTrack = { ");
       for(int i=0;i<COUNTOF(TrackStatus);++i) {
