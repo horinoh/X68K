@@ -12,11 +12,15 @@ void main()
   puts("C : DMAMOV_L");
   puts("ESC : EXIT");
 
+  int A_PREV = 0;
+  int B_PREV = 0;
+  int C_PREV = 0;
   while(1) {
     if(ESC_ON) { break; }
     
     #pragma region DMAMOVE
-    if(A_ON) {
+    int A_CUR = A_ON;
+    if(A_PUSH(A_PREV)) {
      if(DMA_MODE_NONE == DMAMODE()) {
         uint8_t Src[] = { 0xde, 0xad, 0xbe, 0xef };
         uint8_t Dst[] = { 0x00, 0x00, 0x00, 0x00 };
@@ -47,10 +51,12 @@ void main()
         }
       }
     } 
+    A_PREV = A_CUR;
     #pragma endregion
 
     #pragma region DMAMOV_A
-    if(B_ON) {
+    int B_CUR = B_ON;
+    if(B_PUSH(B_PREV)) {
       if(DMA_MODE_NONE == DMAMODE()) {
         const uint8_t Src[] = { 0xde, 0xaa, 0xad, 0xbb, 0xbe, 0xcc, 0xef };
         struct CHAIN SrcChain[] = {
@@ -88,10 +94,12 @@ void main()
         }
       }
     }
+    B_PREV = B_CUR;
     #pragma endregion
 
     #pragma region DMAMOV_L
-    if(C_ON) {
+    int C_CUR = C_ON;
+    if(C_PUSH(C_PREV)) {
       if(DMA_MODE_NONE == DMAMODE()) {
         const uint8_t Src[] = { 0xde, 0xaa, 0xad, 0xbb, 0xbe, 0xcc, 0xef };
         struct CHAIN2 SrcChain3 = { .adr = (int)&Src[6], .len = sizeof(Src[0]), .next = NULL };
@@ -127,6 +135,7 @@ void main()
         }
       }
     }
+    C_PREV = C_CUR;
     #pragma endregion
 
   }

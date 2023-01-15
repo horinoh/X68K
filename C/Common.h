@@ -6,6 +6,10 @@
 #define MAX(_Lhs, _Rhs) (_Lhs > _Rhs ? _Lhs : _Rhs)
 #define CLAMP(_Val, _Min, _Max) MAX(MIN(_Val, _Max), _Min)
 
+//#define PI 4.0f * atan(1.0f)
+#define TO_RADIAN(_Deg) ((_Deg) * PI / 180.0f)
+#define TO_DEGREE(_Rad) ((_Rad) * 180.0f / PI)
+
 static fpos_t  GetFileSize(FILE* Fp)
 {
   fpos_t Size = 0;
@@ -116,7 +120,8 @@ enum {
 #define PCG_NO(_No) (_No & 0xff)
 #define CODE(_Flip, _Pal, _PCG) (_Flip | PAL_NO(_Pal) | PCG_NO(_PCG))
 
-#define ON_VSYNC (1 << 31)
+#define WITH_VSYNC 0
+#define WITHOUT_VSYNC (1 << 31)
 
 /*
         0   1   2   3   4   5   6   7 (BIT)
@@ -146,9 +151,12 @@ enum {
 #define TO_INTERNALCODE(_KeyCode) (_KeyCode & 0xff)
 
 #define IS_ON(_Grp, _Bit) (BITSNS(_Grp) & (1 << _Bit))
+#define IS_PUSH(_Grp, _Bit, _Prev) (IS_ON(_Grp, _Bit) && !_Prev)
+
 
 #define ESC_ON IS_ON(0, 1)
 #define TAB_ON IS_ON(2, 0)
+#define TAB_PUSH(_Prev) IS_PUSH(2, 0, _Prev)
 #define SPACE_ON IS_ON(6, 5)
 #define SHIFT_ON IS_ON(14, 0)
 
@@ -172,8 +180,11 @@ enum {
 #define T_ON IS_ON(2, 5)
 #define P_ON IS_ON(3, 2)
 #define A_ON IS_ON(3, 6)
+#define A_PUSH(_Prev) IS_PUSH(3, 6, _Prev)
 #define S_ON IS_ON(3, 7)
 #define Z_ON IS_ON(5, 2)
 #define X_ON IS_ON(5, 3)
 #define C_ON IS_ON(5, 4)
+#define C_PUSH(_Prev) IS_PUSH(5, 4, _Prev)
 #define B_ON IS_ON(5, 6)
+#define B_PUSH(_Prev) IS_PUSH(5, 6, _Prev)
