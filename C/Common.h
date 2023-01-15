@@ -161,9 +161,13 @@ enum {
 #define SHIFT_ON IS_ON(14, 0)
 
 #define LEFT_ON IS_ON(7, 3)
+#define LEFT_PUSH(_Prev) IS_PUSH(7, 3, _Prev)
 #define UP_ON IS_ON(7, 4)
+#define UP_PUSH(_Prev) IS_PUSH(7, 4, _Prev)
 #define RIGHT_ON IS_ON(7, 5)
+#define RIGHT_PUSH(_Prev) IS_PUSH(7, 5, _Prev)
 #define DOWN_ON IS_ON(7, 6)
+#define DOWN_PUSH(_Prev) IS_PUSH(7, 6, _Prev)
 
 #define ONE_ON IS_ON(0, 2)
 #define TWO_ON IS_ON(0, 3)
