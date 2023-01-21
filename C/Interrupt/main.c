@@ -1,29 +1,14 @@
 #include <stdio.h>
 #include <iocslib.h>
+#include <stdint.h>
 
 #include "Common.h"
 #include "Interrupt.h"
 
-volatile int HCount = 0;
-void INTERRUPT_FUNC OnHBlank()
-{
-	++HCount;
-}
-
-volatile int VCount = 0;
-void INTERRUPT_FUNC OnVBlank()
-{
-	++VCount;
-}
-void VSyncWait(int Wait)
-{
-  while(VCount % Wait) { }
-}
-
 void main()
 {
-  HSYNCST((unsigned char*)OnHBlank);
-  VDISPST((unsigned char*)OnVBlank, ON_VBLANK, 1);
+  HSYNCST((uint8_t*)OnHBlank);
+  VDISPST((uint8_t*)OnVBlank, ON_VBLANK, 1);
 
   int UP_PREV = 0, DOWN_PREV = 0;
   int Wait = 1;
@@ -44,7 +29,7 @@ void main()
     #pragma endregion
 
     //!< Increment after wait
-    VSyncWait(Wait);
+    VWait(Wait);
     ++Inc;
     
     B_LOCATE(0, 0);

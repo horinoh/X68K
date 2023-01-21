@@ -1,16 +1,28 @@
 #pragma once
 
-#define BG_OFF 0
-#define BG_ON 1
+enum {
+  BG_ON_VBLANK = 0,
+  BG_IMMEDIATE = (1 << 31),
+};
 
-//!< 256X256 mode
-//!<    8X8 tile
-//!<    Display area = 32X32 tiles = 256C256
-//!<    Whole area = 64X64 tiles = 512X512
+enum {
+    BG_OFF = 0,
+    BG_ON = 1,
+};
 
-//!< 512X512 mode 
-//!<    16X16 tile
-//!<    Display area = 32X32 tiles = 512X512
-//!<    Whole area = 64X64 tiles = 1024X1024
-#define BG_WIDTH 64
-#define BG_HEIGHT 64
+//!< 256 x 256 モード
+//!<    8 x 8 タイル
+//!<    表示画面 32 x 32 タイル = 256 x 256
+//!<    実画面   64 x 64 タイル = 512 x 512
+
+//!< 512 x 512 モード
+//!<    16 x 16 タイル
+//!<    表示画面 32 x 32 タイル = 512 x 512
+//!<    実画面   64 x 64 タイル = 1024 x 1024
+enum {
+    BG_DISP_WIDTH = 32,
+    BG_DISP_HEIGHT = 32,
+
+    BG_WIDTH = 64,
+    BG_HEIGHT = 64,
+};

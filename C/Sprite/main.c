@@ -70,21 +70,18 @@ uint8_t PCGData16X16[] = {
 
 void main()
 {
-  //!< CRT mode
   const int PrevCRT = CRTMOD(-1);
-  CRTMOD(MODE_512_256X256_C16_P4_31KHZ);
-  //!< Cursor off
+  CRTMOD(CRT_MODE_HIGH_256X256_T16G16_512);
   B_CUROFF();
-  //!< Clear graphics
   G_CLR_ON(); 
   SP_INIT();
 
-  //!< Palette ... Block no is [1, 15] 0 is not used
-  //SPALET(0, 1, ); //!< Transparent ?
+  //!< パレット 1
+  //SPALET(0, 1, ); //!< 透明色 (Transparent) ?
   SPALET(1, 1, COL_RED);
   SPALET(2, 1, COL_YELLOW);
   SPALET(3, 1, COL_GRAY);
-
+  //!< パレット 2
   SPALET(1, 2, COL_WHITE);
   SPALET(2, 2, COL_YELLOW);
   SPALET(3, 2, COL_GREEN);
@@ -95,19 +92,18 @@ void main()
 
   //!< Sprite
   int SpPCG = 0;
-  int SpPal = 1; //= 2;
+  int SpPal0 = 1, SpPal1 = 2;
   int SpX = 128, SpY = 128;
   {
     SP_ON();
     //!< Set sprite
-    SP_REGST(0, SpX, SpY, CODE(FLIP_NONE, SpPal, SpPCG), SP_PRI_FRONT);
+    SP_REGST(0, SpX, SpY, CODE(FLIP_NONE, SpPal0, SpPCG), SP_PRI_FRONT);
+    SP_REGST(1, SpX + 16, SpY, CODE(FLIP_NONE, SpPal1, SpPCG), SP_PRI_FRONT);
   }
 
   //!< BG
   {
-    //!< BG0 PAGE0 ONOFF
     BGCTRLST(0, 0, BG_OFF);
-    //!< BG1 PAGE1 ONOFF
     BGCTRLST(1, 1, BG_OFF);
   }
 
@@ -124,13 +120,10 @@ void main()
     if(DOWN_ON) { ++SpY; }
     if(LEFT_ON) { --SpX; }
     if(RIGHT_ON) { ++SpX; }
-    SpX = CLAMP(SpX, 0, 0xff);
-    SpY = CLAMP(SpY, 0, 0xff);
-    //SpX = MAX(MIN(SpX, 0xff), 0);
-    //SpY = MAX(MIN(SpY, 0xff), 0);
-    SP_REGST(ON_VSYNC | 0, SpX, SpY, CODE(FLIP_NONE, SpPal, SpPCG), SP_PRI_FRONT);
-
-    //SPALET(ON_VSYNC | 0, 0, XXX);
+    SpX = CLAMP(SpX, 0, 0xff + SP_COORD_OFFSET);
+    SpY = CLAMP(SpY, 0, 0xff + SP_COORD_OFFSET);
+    SP_REGST(SP_ON_VBLANK | 0, SpX, SpY, CODE(FLIP_NONE, SpPal0, SpPCG), SP_PRI_FRONT);
+    SP_REGST(SP_ON_VBLANK | 1, SpX + 16, SpY, CODE(FLIP_HV, SpPal1, SpPCG), SP_PRI_FRONT);
 
     B_LOCATE(0, 0);
     printf("SP  %03d, %03d\n", SpX, SpY);

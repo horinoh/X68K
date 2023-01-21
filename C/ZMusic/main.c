@@ -8,10 +8,10 @@
 #include "Common.h"
 #include "Sound.h"
 
-//!< In advance
-//!< - Run ZMSC3
+//!< 予め ZMSC3 を実行しておくこと (In advance run ZMSC3)
 //!<    $ZMSC -F1
-//!< - Create ZMD (compile ZMS)
+
+//!< ZMD は ZMS をコンパイルして作成しておくこと (Create ZMD by compiling ZMS)
 //!<    $ZMC XXX.ZMS
 
 #pragma region EVENTS
@@ -37,12 +37,12 @@ void OnChange()
   printf("Tempo = %d, Timer = %d\n", ZM_TEMPO(zm_tempo(-1, 0)), ZM_TIMER(zm_set_timer_value(-1, 0)));
 
   #if 1
-  //!< TRACK TABLE
+  //!< トラックテーブル (Track table)
   printf("Track table = ");
   const int8_t* TrackTable = zm_get_track_table();
   PrintTable(TrackTable);
   #else
-  //!< TRACK TABLE SE
+  //!< トラックテーブル SE (Track table SE()
   printf("Track table se = ");
   const int8_t* TrackTableSe = zm_get_track_table_se();
   PrintTable(TrackTableSe);
@@ -51,11 +51,11 @@ void OnChange()
 void OnZMDChange(const struct ZMDEntry* ZMD)
 {
   #if 1
-  //!< Play 
+  //!< 再生 (Play)
   zm_play_zmd(ZMD->Size, ZMD_HEADER_SKIP(ZMD->Data));
   //zm_play_zmd(ZM_TO_INTERNAL_BUFFER, ZMD_HEADER_SKIP(ZMD->Data));
   #else
-  //!< Play se
+  //!< SE再生 (Play SE)
   //zm_se_play(ZMD_HEADER_SKIP(ZMD->Data));
   zm_play_zmd_se(ZMD_HEADER_SKIP(ZMD->Data));
   #endif
@@ -66,7 +66,7 @@ void OnZMDChange(const struct ZMDEntry* ZMD)
 
 void main(int argc, char* argv[])
 {
-  //!< Give ZMD file as argument
+  //!< 引数として ZMD ファイルを与えてください (Give ZMD file as argument)
   if(argc < 2) {
     B_LOCATE(0, 1);
     puts("Give ZMD file as argument");
@@ -74,7 +74,7 @@ void main(int argc, char* argv[])
     return;
   }
 
-  //!< Version
+  //!< バージョン (Version)
   B_LOCATE(0, 1);
   if(-1 == zm_check_zmsc()) {
     puts("Run ZMSC3 in advance\n");
@@ -82,9 +82,10 @@ void main(int argc, char* argv[])
   }
   printf("ZmVer = 0x%0x, LibVer = %d\n", zm_ver(), zm_get_zmlibver());
 
-  //!< Initialize
+  //!< 初期化 (Initialize)
   zm_init(0);
 
+  //!< イベントコールバック (Event callback)
   #pragma region EVENTS
   {
     int Events[] = {
@@ -100,7 +101,7 @@ void main(int argc, char* argv[])
   #pragma endregion
 
   #pragma region ZMD
-  //!< Load ZMD files (arguments)
+  //!< ZMD ファイル読込 (Load ZMD files)
   struct ZMDEntry* ZMDs = (struct ZMDEntry *)calloc(argc - 1 + 1, sizeof(*ZMDs));
   int ZMDIndexMax = 0;
   for(int i = 1;i < argc;++i) {
@@ -120,7 +121,7 @@ void main(int argc, char* argv[])
       fclose(Fp);
     }
   }
-  //!< Sentinel
+  //!< 末尾に版兵 (Sentinel)
   ZMDs[ZMDIndexMax].Data = NULL; 
   if(0 == ZMDIndexMax) {
     free(ZMDs);
@@ -182,7 +183,7 @@ void main(int argc, char* argv[])
     if(ZERO_ON) { short Track[] = { 0, -1 }; zm_play(Track); } 
     #endif
 
-    //!< Select ZMD
+    //!< 上下で ZMD 選択 (Select ZMD bu up down)
     if(UP_ON) {
       ZMDIndex = MAX(--ZMDIndex, 0);
     }
@@ -198,15 +199,15 @@ void main(int argc, char* argv[])
 
     B_LOCATE(0, 5);
 
-    //!< ZMD index now playing
+    //!< 再生中の ZMD インデックス (ZMD index now playing)
     printf("ZMDIndex = %d / %d\n", ZMDIndex, ZMDIndexMax - 1);
 
-    //!< Play time
+    //!< 再生時間 (Play time)
     const int Time = zm_get_play_time();
     printf("%02d:%02d:%02d\n", ZM_HOUR(Time), ZM_MiNUTE(Time), ZM_SECOND(Time));
     puts("");
 
-    //!< ZMSC status cf) ZM_STAT.MAC
+    //!< ZMSC の状態 (ZMSC status) cf) ZM_STAT.MAC
     {
       puts("ZMSC status");
       const struct zmusic_stat* Stat = (const struct zmusic_stat*)zm_get_zmsc_status();
@@ -219,7 +220,7 @@ void main(int argc, char* argv[])
       puts("");
     }
 
-    //!< Track work
+    //!< トラックワーク (Track work)
     {
       puts("Track work");
       #if 1
@@ -234,7 +235,7 @@ void main(int argc, char* argv[])
       }
     }
 
-    //!< Buffer information
+    //!< バッファ情報 (Buffer information)
     {
       puts("Buffer information");
       const struct buffer_information* Buffer = (const struct buffer_information*)zm_get_buffer_information();
@@ -246,7 +247,7 @@ void main(int argc, char* argv[])
       }
     }
 
-    //!< Track channel info
+    //!< トラックチャンネル情報 (Track channel info)
     {
       puts("Playing");
 
@@ -260,7 +261,7 @@ void main(int argc, char* argv[])
       }
       puts("}");
 
-      //!< Track status
+      //!< トラック状態 (Track status)
       short TrackStatus[65535 + 1];
       zm_play_status_all_tr(TrackStatus);
       printf("\tTrack = { ");
@@ -272,13 +273,13 @@ void main(int argc, char* argv[])
       puts("}");
     }
 
-    //!< Events info
+    //!< イベントコールバック情報 (Events info)
     puts("");
     puts(EventStr);
   }
 
 #pragma region ZMD
-  //!< Release
+  //!< 解放 (Release)
   if(NULL != ZMDs) {
     int i = 0;
     while(NULL != ZMDs[i].Data) {

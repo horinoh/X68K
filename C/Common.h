@@ -33,51 +33,27 @@ static fpos_t LoadFile(FILE* Fp)
   return Size;
 }
 
-enum 
-{
-  MODE_1024_512X512_C16_P1_31KHZ,
-  MODE_1024_512X512_C16_P1_15KHZ,
-
-  MODE_1024_256X256_C16_P1_31KHZ,
-  MODE_1024_256X256_C16_P1_15KHZ,
-
-  MODE_512_512X512_C16_P4_31KHZ,
-  MODE_512_512X512_C16_P4_15KHZ,
-
-  MODE_512_256X256_C16_P4_31KHZ,
-  MODE_512_256X256_C16_P4_15KHZ,
-
-  MODE_512_512X512_C256_P2_31KHZ,
-  MODE_512_512X512_C256_P2_16KHZ,
-
-  MODE_512_256X256_C256_P2_31KHZ,
-  MODE_512_256X256_C256_P2_15KHZ,
-
-  MODE_512_512X512_C65536_P1_31KHZ,
-  MODE_512_512X512_C65536_P1_15KHZ,
-
-  MODE_512_256X256_C65536_P1_31KHZ,
-  MODE_512_256X256_C65536_P1_15KHZ,
-
-  MODE_1024_768X512_C16_P1_31KHZ,
-  MODE_1024_1024X424_C16_P1_24KHZ,
-  MODE_1024_1024X848_C16_P1_24KHZ,
-
-  MODE_1024_640X480_C16_P1_24KHZ,
-
-  MODE_1024_768X512_C256_P2_31KHZ,
-  MODE_1024_1024X848_C256_P2_24KHZ,
-  MODE_1024_1024X424_C256_P2_24KHZ,
-  MODE_1024_640X480_C256_P2_24KHZ,
-
-  MODE_1024_768X512_C65536_P1_31KHZ,
-  MODE_1024_1024X848_C65536_P1_24KHZ,
-  MODE_1024_1024X424_C65536_P1_24KHZ,
-  MODE_1024_640X480_C65536_P1_24KHZ,
+enum {
+  CRT_MODE_HIGH_512X512_T16G16_1024,
+  CRT_MODE_LOW_512X512_T16G16_1024,
+  CRT_MODE_HIGH_256X256_T16G16_1024,
+  CRT_MODE_LOW_256X256_T16G16_1024,
+  CRT_MODE_HIGH_512X512_T16G16_512,
+  CRT_MODE_LOW_512X512_T16G16_512,
+  CRT_MODE_HIGH_256X256_T16G16_512,
+  CRT_MODE_LOW_256X256_T16G16_512,
+  CRT_MODE_HIGH_512X512_T16G256_512,
+  CRT_MODE_LOW_512X512_T16G256_512,
+  CRT_MODE_HIGH_256X256_T16G256_512,
+  CRT_MODE_LOW_256X256_T16G256_512,
+  CRT_MODE_HIGH_512X512_T16G65536_512,
+  CRT_MODE_LOW_512X512_T16G65536_512,
+  CRT_MODE_HIGH_256X256_T16G65536_512,
+  CRT_MODE_LOW_256X256_T16G65536_512,
+  CRT_MODE_HIGH_768X512_T16G16_1024,
 };
 
-#define PIX2(_L, _R) ((_L & 0xf) << 4) | (_R & 0xf)
-
+#pragma region COLOR
  //!< GGGG GRRR RRBB BBB0
 #define RGB(_R, _G, _B) (((_G & 0x1f) << 11) | ((_R & 0x1f) << 6) | ((_B & 0x1f) << 1))
 #define COL_TRANSPARENT RGB(0, 0, 0)
@@ -96,7 +72,6 @@ enum
 #define COL_LIME RGB(0, 31, 0)
 #define COL_SILVER RGB(23, 23, 23)
 #define COL_OLIVE RGB(15, 15, 0)
-
 //!<  H
 //!<    [  0,  31] Red - Yellow
 //!<    [ 32,  63] Yellow - Green
@@ -109,19 +84,36 @@ enum
 //!< V
 //!<    Black level
 //!< int HSVTORGB(H, S, V);
+#pragma endregion
 
+#pragma region PRIORITY
 enum {
-  FLIP_NONE = 0x0 << 8,
-  FLIP_H = 0x4 << 8,
-  FLIP_V = 0x8 << 8,
+  VIDEO_CTRL_REG1 = 0xe82500,
+  VIDEO_CTRL_REG2 = 0xe82600,
 };
 
-#define PAL_NO(_No) ((_No & 0xf) << 8)
-#define PCG_NO(_No) (_No & 0xff)
-#define CODE(_Flip, _Pal, _PCG) (_Flip | PAL_NO(_Pal) | PCG_NO(_PCG))
+#define GP_PAGE_PRI0(_Page) (_Page & 0x3)
+#define GP_PAGE_PRI1(_Page) (GP_PAGE_PRI0(_Page) << 2)
+#define GP_PAGE_PRI2(_Page) (GP_PAGE_PRI0(_Page) << 4)
+#define GP_PAGE_PRI3(_Page) (GP_PAGE_PRI0(_Page) << 6)
+#define GP_PAGE_PRI(_Pri0Page, _Pri1Page, _Pri2Page, _Pri3Page) (GP_PAGE_PRI0(_Pri0Page) | GP_PAGE_PRI1(_Pri1Page) | GP_PAGE_PRI2(_Pri2Page) | GP_PAGE_PRI3(_Pri3Page))
 
-#define WITH_VSYNC 0
-#define WITHOUT_VSYNC (1 << 31)
+//!< グラフィック画面
+//!<    1 枚の場合は以下を使用すること
+//!<      GP_PAGE_PRI(0, 1, 2, 3) 
+//!<    2 枚の場合は(どちらが手前かにより)以下のいずれかを使用すること
+//!<      GP_PAGE_PRI(0, 1, 2, 3)
+//!<      GP_PAGE_PRI(2, 3, 0, 1)
+
+//!< グラフィック(GP)、テキスト(TX)、スプライト(SPP) のプライオリティ [0, 2]
+#define GP_PRI(_Pri) ((_Pri & 0x3) << 8)
+#define TX_PRI(_Pri) ((_Pri & 0x3) << 10)
+#define SP_PRI(_Pri) ((_Pri & 0x3) << 12)
+
+//!< 例) 
+//!<    VIDEO_CTRL_REG1 =  (GP_PRI(0) | TX_PRI(1) | SP_PRI(2)) | GP_PAGE_PRI(0, 1, 2, 3)
+
+#pragma endregion
 
 /*
         0   1   2   3   4   5   6   7 (BIT)
@@ -153,12 +145,12 @@ enum {
 #define IS_ON(_Grp, _Bit) (BITSNS(_Grp) & (1 << _Bit))
 #define IS_PUSH(_Grp, _Bit, _Prev) (IS_ON(_Grp, _Bit) && !_Prev)
 
-
 #define ESC_ON IS_ON(0, 1)
 #define TAB_ON IS_ON(2, 0)
 #define TAB_PUSH(_Prev) IS_PUSH(2, 0, _Prev)
 #define SPACE_ON IS_ON(6, 5)
-#define SHIFT_ON IS_ON(14, 0)
+#define SPACE_PUSH(_Prev) IS_PUSH(6, 5, _Prev)
+//#define SHIFT_ON IS_ON(14, 0)
 
 #define LEFT_ON IS_ON(7, 3)
 #define LEFT_PUSH(_Prev) IS_PUSH(7, 3, _Prev)

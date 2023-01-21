@@ -6,12 +6,8 @@
 
 void main()
 {
-  //!< CRT mode
   const int PrevCRT = CRTMOD(-1);
-  //B_SUPER(0);
-  //!< Cursor off
   B_CUROFF();
-  //!< Clear graphics
   G_CLR_ON();
 
   while(1) 
@@ -26,9 +22,7 @@ void main()
     printf(" %s      %s %s\n", (Joy & JOY_DOWN) ? "-" : "o", (Joy & JOY_B) ? "-" : "o", (Joy & JOY_A) ? "-" : "o");
   }
 
-  //!< Cursor on
   B_CURON();
-  //!< CRT mode
   CRTMOD(PrevCRT);
 }
 

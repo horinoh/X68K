@@ -17,16 +17,13 @@ uint8_t PCGWork[PCG_16X16_COUNT + 1];
 
 void main()
 {
-  //!< CRT mode
   const int PrevCRT = CRTMOD(-1);
-  CRTMOD(MODE_512_256X256_C16_P4_31KHZ);
-  //!< Cursor off
+  CRTMOD(CRT_MODE_HIGH_256X256_T16G16_512);
   B_CUROFF();
-  //!< Clear graphics
   G_CLR_ON(); 
   SP_INIT();
 
-  //!< Load palette data
+  //!< パレットデータ読込 (Load palette data)
   {
     FILE* Fp = fopen("../../x68k_xsp/SAMPLE/PANEL.PAL", "rb");
       if(NULL != Fp) {
@@ -35,7 +32,7 @@ void main()
       fclose(Fp);
     }
   }
-  //!< Load PCG data
+  //!< PCG データ読込 (Load PCG data)
   {
     FILE* Fp = fopen("../../x68k_xsp/SAMPLE/PANEL.SP", "rb");
     if(NULL != Fp) {
@@ -45,29 +42,20 @@ void main()
     }
   }
 
-  //!< Palette
+  //!< パレット
   for (int i = 0; i < COUNTOF(PALData); ++i) {
     for (int j = 0; j < COUNTOF(PALData[0]); ++j) {
 	  	SPALET(j, i, PALData[i][j]);
     }
 	}
 
-  //!< XSP  
+  //!< XSP
   {
     xsp_on();
 
     xsp_pcgdat_set(PCGData, PCGWork, sizeof(PCGWork));
 
-    //!< Metasprite
-    XOBJ_FRM_DAT MetaSpriteData[] = {
-      { .vx =  0, .vy =  0, .pt = 0, .rv = FLIP_NONE },
-      { .vx =  0, .vy = 16, .pt = 1, .rv = FLIP_NONE },
-      { .vx = 16, .vy =  0, .pt = 2, .rv = FLIP_NONE },
-      { .vx = 16, .vy = 16, .pt = 3, .rv = FLIP_NONE },
-    };
-    XOBJ_REF_DAT MetaSprite = { .num = COUNTOF(MetaSpriteData), .ptr = MetaSpriteData };
-    xsp_objdat_set(&MetaSprite);
-
+    //!< 通常スプライト (Sprite)
     XSP_SET_ARG Sprites[] = {
       { .x = 128, .y = 128, .pt = 0, .info = CODE(FLIP_NONE, 0, 0) },
       // { .x = 128, .y = 128, .pt = 1, .info = CODE(FLIP_NONE, 0, 0) },
@@ -76,6 +64,16 @@ void main()
       // { .x = 128, .y = 128, .pt = 4, .info = CODE(FLIP_NONE, 0, 0) },
       // { .x = 128, .y = 128, .pt = 5, .info = CODE(FLIP_NONE, 0, 0) },`
     };
+
+    //!< メタスプライト (Metasprite)
+    XOBJ_FRM_DAT MetaSpriteData[] = {
+      { .vx =  0, .vy =  0, .pt = 0, .rv = FLIP_NONE },
+      { .vx =  0, .vy = 16, .pt = 1, .rv = FLIP_NONE },
+      { .vx = 16, .vy =  0, .pt = 2, .rv = FLIP_NONE },
+      { .vx = 16, .vy = 16, .pt = 3, .rv = FLIP_NONE },
+    };
+    XOBJ_REF_DAT MetaSprite = { .num = COUNTOF(MetaSpriteData), .ptr = MetaSpriteData };
+    xsp_objdat_set(&MetaSprite);
 
     while (1)
     {
@@ -99,10 +97,10 @@ void main()
       Sp->x = MAX(MIN(Sp->x, 0xff), 0);
       Sp->y = MAX(MIN(Sp->y, 0xff), 0);
 
-      //!< Put as sprite
+      //!< 通常スプライト (Put as sprite)
       //xsp_set_st(Sp);
 
-      //!< Put as metasprite
+      //!< メタスプライト (Put as metasprite)
       //xobj_set_st(Sp); 
 
       xsp_out();
@@ -114,5 +112,5 @@ void main()
     xsp_off();
   }
 
-  CRTMOD(0x10);
+  CRTMOD(PrevCRT);
 }

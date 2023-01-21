@@ -10,6 +10,7 @@ void main()
   puts("A : DMAMOVE");
   puts("B : DMAMOV_A");
   puts("C : DMAMOV_L");
+  puts("\tWITH SHIFT : REVERSE MODE");
   puts("ESC : EXIT");
 
   int A_PREV = 0;
