@@ -1,10 +1,5 @@
 #pragma once
 
-enum {
-  PCG_PAT_8X8,
-  PCG_PAT_16X16,
-};
-
 #define PCG_8X8_COUNT 256 //!< 計算上は 512 いけそうだが、PCG 番号を 8 ビットで指定する為、256 が上限
 #define PCG_16X16_COUNT 128
 
@@ -13,13 +8,19 @@ enum {
 
 #define PIX2(_L, _R) ((_L & 0xf) << 4) | (_R & 0xf)
 
+//!< SP_DEFCG() 用
+enum {
+  PCG_PAT_8X8,
+  PCG_PAT_16X16,
+};
+
+//!< SP_REGST(), BGTEXTST() 用
 enum {
   FLIP_NONE = 0,
   FLIP_H = (1 << 14),
   FLIP_V = (1 << 15),
   FLIP_HV = FLIP_H | FLIP_V,
 };
-
 #define PAL_NO(_No) ((_No & 0xf) << 8)
 #define PCG_NO(_No) (_No & 0xff)
 #define CODE(_Flip, _Pal, _PCG) (_Flip | PAL_NO(_Pal) | PCG_NO(_PCG))

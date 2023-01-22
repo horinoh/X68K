@@ -74,6 +74,15 @@ void DrawWindow(int LTx, int LTy, int RBx, int RBy, int Col)
   BOX(&Box);
 }
 
+void INTERRUPT_FUNC OnVBlank2()
+{
+  OnVBlank();
+
+   volatile short *Reg = (short *)VIDEO_CTRL_REG1;
+   //volatile short *Reg = (short *)GP_VRAM_PAGE0;
+   //*Reg =  (GP_PRI(0) | TX_PRI(1) | SP_PRI(2)) | GP_PAGE_PRI(0, 1, 2, 3);
+}
+
 void main()
 {
   const int PrevCRT = CRTMOD(-1);
@@ -103,17 +112,24 @@ void main()
   DrawAllPage();
 
   int WinX = 0, WinY = 0;
-  int WinW = 127, WinH = 127;
+  int WinW = 255, WinH = 255;
   int UP_PREV = 0, DOWN_PREV = 0, LEFT_PREV = 0, RIGHT_PREV = 0;
   int SPACE_PREV = 0;
-  VDISPST((uint8_t*)OnVBlank, ON_VBLANK, 1);
+  int TAB_PREV = 0;
+
+  int TogglePages[] = { GP_ALL_PAGES_BIT, GP_PAGE0_BIT, GP_PAGE1_BIT, GP_PAGE2_BIT, GP_PAGE3_BIT };
+  int TogglePageIndex = 0;
+
+  //!< 垂直同期
+  VDISPST((uint8_t*)OnVBlank2, ON_VBLANK, 1);
+  
   while (1)
   {      
     VWait(1);
 
     if(ESC_ON) { break; }
 
-    if(TAB_ON) {
+    if(A_ON) {
       if(UP_ON) { --WinH;}
       if(DOWN_ON) { ++WinH; }
       if(LEFT_ON) { --WinW; }
@@ -125,13 +141,15 @@ void main()
       if(LEFT_ON) { --WinX; }
       if(RIGHT_ON) { ++WinX; }
     }
-    int SPACE_CUR = SPACE_ON;
     int UP_CUR = UP_ON, DOWN_CUR = DOWN_ON, LEFT_CUR = LEFT_ON, RIGHT_CUR = RIGHT_ON;
+    int SPACE_CUR = SPACE_ON;
+    int TAB_CUR = TAB_ON;
     WinX = CLAMP(WinX, 0, 255);
     WinY = CLAMP(WinY, 0, 255);
     WinW = CLAMP(WinW, 1, 255);
     WinH = CLAMP(WinH, 1, 255);
 
+    //!< スペースで再描画
     if(SPACE_PUSH(SPACE_PREV)) {
       ClearAllPage();
       
@@ -140,6 +158,8 @@ void main()
       
       DrawWindow(WinX, WinY, WinX + WinW, WinY + WinH, 5); 
     }
+    
+    //!< ウインドウ
     if(UP_PUSH(UP_PREV) | DOWN_PUSH(DOWN_PREV) | LEFT_PUSH(LEFT_PREV) | RIGHT_PUSH(RIGHT_PREV)) {
       ClearAllPage();
       WINDOW(0, 0, 512, 512);
@@ -148,10 +168,18 @@ void main()
       APAGE(0); WIPE();
       DrawWindow(WinX, WinY, WinX + WinW, WinY + WinH, 5); 
     }
+
+    //!< ページ毎のオンオフ
+    if(TAB_PUSH(TAB_PREV)) {
+      ++TogglePageIndex; 
+      TogglePageIndex %= COUNTOF(TogglePages);
+      VPAGE(TogglePages[TogglePageIndex]);
+    }
     UP_PREV = UP_CUR; DOWN_PREV = DOWN_CUR; LEFT_PREV = LEFT_CUR, RIGHT_PREV = RIGHT_CUR;
     SPACE_PREV = SPACE_CUR;
+    TAB_PREV = TAB_CUR;
 
-    //!< ページ毎のスクロール
+    //!< ページ毎のスクロール (現状何もしてない)
     SCROLL(0, 0, 0);
     SCROLL(1, 0, 0);
     SCROLL(2, 0, 0);

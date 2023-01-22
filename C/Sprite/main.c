@@ -103,8 +103,8 @@ void main()
 
   //!< BG
   {
-    BGCTRLST(0, 0, BG_OFF);
-    BGCTRLST(1, 1, BG_OFF);
+    BGCTRLST(0, 0, OFF);
+    BGCTRLST(1, 1, OFF);
   }
 
   while (1)

@@ -1,8 +1,11 @@
 #pragma once
 
-#define JOY_UP (1 << 0)
-#define JOY_DOWN (1 << 1)
-#define JOY_LEFT (1 << 2)
-#define JOY_RIGHT (1 << 3)
-#define JOY_A (1 << 5)
-#define JOY_B (1 << 6)
+//!< JOYGET() 用
+enum {
+    JOY_UP = (1 << 0),
+    JOY_DOWN = (1 << 1),
+    JOY_LEFT = (1 << 2),
+    JOY_RIGHT = (1 << 3),
+    JOY_A = (1 << 5),
+    JOY_B = (1 << 6),
+};

@@ -1,13 +1,9 @@
 #pragma once
 
+//!< BGSCRLST() —p
 enum {
   BG_ON_VBLANK = 0,
   BG_IMMEDIATE = (1 << 31),
-};
-
-enum {
-    BG_OFF = 0,
-    BG_ON = 1,
 };
 
 //!< 256 x 256 ƒ‚[ƒh

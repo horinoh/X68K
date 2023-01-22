@@ -34,6 +34,12 @@ static fpos_t LoadFile(FILE* Fp)
 }
 
 enum {
+  OFF = 0,
+  ON = 1,
+};
+
+//!< CRTMOD() —p
+enum {
   CRT_MODE_HIGH_512X512_T16G16_1024,
   CRT_MODE_LOW_512X512_T16G16_1024,
   CRT_MODE_HIGH_256X256_T16G16_1024,
@@ -112,9 +118,9 @@ enum {
 
 //!< —á) 
 //!<    VIDEO_CTRL_REG1 =  (GP_PRI(0) | TX_PRI(1) | SP_PRI(2)) | GP_PAGE_PRI(0, 1, 2, 3)
-
 #pragma endregion
 
+#pragma region KEY_INPUT
 /*
         0   1   2   3   4   5   6   7 (BIT)
     0      ESC  1   2   3   4   5   6     
@@ -150,7 +156,8 @@ enum {
 #define TAB_PUSH(_Prev) IS_PUSH(2, 0, _Prev)
 #define SPACE_ON IS_ON(6, 5)
 #define SPACE_PUSH(_Prev) IS_PUSH(6, 5, _Prev)
-//#define SHIFT_ON IS_ON(14, 0)
+#define SHIFT_ON IS_ON(14, 0)
+#define CTRL_ON IS_ON(15, 0)
 
 #define LEFT_ON IS_ON(7, 3)
 #define LEFT_PUSH(_Prev) IS_PUSH(7, 3, _Prev)
@@ -184,3 +191,4 @@ enum {
 #define C_PUSH(_Prev) IS_PUSH(5, 4, _Prev)
 #define B_ON IS_ON(5, 6)
 #define B_PUSH(_Prev) IS_PUSH(5, 6, _Prev)
+#pragma endregion

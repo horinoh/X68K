@@ -131,9 +131,9 @@ void main()
   int Bg1X = 0, Bg1Y = 0;
   {
     //!< BG コントロールレジスタ0、テキストページ0 オン (BG0 ON)
-    BGCTRLST(0, 0, BG_ON);
+    BGCTRLST(0, 0, ON);
     //!< BG コントロールレジスタ1、テキストページ1 オン (BG1 ON)
-	  BGCTRLST(1, 1, BG_ON);
+	  BGCTRLST(1, 1, ON);
 
     //!< テキストーページをパターンでクリア
     BGTEXTCL(0, CODE(FLIP_NONE, 0, 0)); 
@@ -169,19 +169,19 @@ void main()
     int TAB_CUR = TAB_ON;
     if(TAB_PUSH(TAB_PREV)) {
       if(BGCTRLGT(0)){
-        BGCTRLST(0, 0, BG_OFF);
-	      BGCTRLST(1, 1, BG_ON);
+        BGCTRLST(0, 0, OFF);
+	      BGCTRLST(1, 1, ON);
       } else {
-        BGCTRLST(0, 0, BG_ON);
-	      BGCTRLST(1, 1, BG_OFF);
+        BGCTRLST(0, 0, ON);
+	      BGCTRLST(1, 1, OFF);
       }
     }
     TAB_PREV = TAB_CUR;
 
     //!< BG 全表示
     if(SPACE_ON) {
-      BGCTRLST(0, 0, BG_ON);
-	    BGCTRLST(1, 1, BG_ON);
+      BGCTRLST(0, 0, ON);
+	    BGCTRLST(1, 1, ON);
     }
 
     B_LOCATE(0, 0);

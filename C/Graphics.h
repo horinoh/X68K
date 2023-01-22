@@ -8,6 +8,7 @@
 //!<        256色 x 2ページ
 //!<        65536色 x 1ページ
 
+//!< VPAGE() 用
 enum {
   GP_PAGE0_BIT = 1 << 0,
   GP_PAGE1_BIT = 1 << 1,
@@ -50,6 +51,7 @@ enum {
   // GP_SCROLL_PAGE3_X = 0xe80024, //!< & 0x1ffff
   // GP_SCROLL_PAGE3_Y = 0xe80026, //!< & 0x1ffff
 
+//!< SYMBOL() 用
 enum {
   FONT12,
   FONT16,
