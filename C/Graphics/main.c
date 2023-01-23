@@ -5,6 +5,7 @@
 #include "Common.h"
 #include "Graphics.h"
 #include "Interrupt.h"
+#include "IOCS.h"
 
 //!< 文字列表示用
 char Str[8];
@@ -74,15 +75,6 @@ void DrawWindow(int LTx, int LTy, int RBx, int RBy, int Col)
   BOX(&Box);
 }
 
-void INTERRUPT_FUNC OnVBlank2()
-{
-  OnVBlank();
-
-   volatile short *Reg = (short *)VIDEO_CTRL_REG1;
-   //volatile short *Reg = (short *)GP_VRAM_PAGE0;
-   //*Reg =  (GP_PRI(0) | TX_PRI(1) | SP_PRI(2)) | GP_PAGE_PRI(0, 1, 2, 3);
-}
-
 void main()
 {
   const int PrevCRT = CRTMOD(-1);
@@ -94,7 +86,7 @@ void main()
   B_CUROFF();
   G_CLR_ON(); 
 
-  //!< 表示するページの指定 (ここでは 全ページ)
+  //!< 全ページ表示
   if(0 == VPAGE(GP_ALL_PAGES_BIT)) {}
   
   HOME(0, 0, 0);
@@ -116,12 +108,18 @@ void main()
   int UP_PREV = 0, DOWN_PREV = 0, LEFT_PREV = 0, RIGHT_PREV = 0;
   int SPACE_PREV = 0;
   int TAB_PREV = 0;
+  int P_PREV = 0;
 
+  //!< ページ毎のオンオフ切替え
   int TogglePages[] = { GP_ALL_PAGES_BIT, GP_PAGE0_BIT, GP_PAGE1_BIT, GP_PAGE2_BIT, GP_PAGE3_BIT };
   int TogglePageIndex = 0;
 
+  //!< ページ毎のプライオリティ切替え
+  int TogglePris[] = { GP_PAGE_PRI(0, 1, 2, 3), GP_PAGE_PRI(0, 2, 1, 3), GP_PAGE_PRI(0, 3, 1, 2), GP_PAGE_PRI(3, 0, 1, 2), GP_PAGE_PRI(3, 2, 1, 0), };
+  int TogglePriIndex = 0;
+
   //!< 垂直同期
-  VDISPST((uint8_t*)OnVBlank2, ON_VBLANK, 1);
+  VDISPST((uint8_t*)OnVBlank, ON_VBLANK, 1);
   
   while (1)
   {      
@@ -130,12 +128,13 @@ void main()
     if(ESC_ON) { break; }
 
     if(A_ON) {
+      //!< A 押しながらでウインドウサイズ変更
       if(UP_ON) { --WinH;}
       if(DOWN_ON) { ++WinH; }
       if(LEFT_ON) { --WinW; }
       if(RIGHT_ON) { ++WinW; }
-    }
-    else {
+    } else {
+      //!< ウインドウ移動
       if(UP_ON) { --WinY;}
       if(DOWN_ON) { ++WinY; }
       if(LEFT_ON) { --WinX; }
@@ -144,6 +143,7 @@ void main()
     int UP_CUR = UP_ON, DOWN_CUR = DOWN_ON, LEFT_CUR = LEFT_ON, RIGHT_CUR = RIGHT_ON;
     int SPACE_CUR = SPACE_ON;
     int TAB_CUR = TAB_ON;
+    int P_CUR = P_ON;
     WinX = CLAMP(WinX, 0, 255);
     WinY = CLAMP(WinY, 0, 255);
     WinW = CLAMP(WinW, 1, 255);
@@ -159,7 +159,7 @@ void main()
       DrawWindow(WinX, WinY, WinX + WinW, WinY + WinH, 5); 
     }
     
-    //!< ウインドウ
+    //!< ウインドウ領域表示
     if(UP_PUSH(UP_PREV) | DOWN_PUSH(DOWN_PREV) | LEFT_PUSH(LEFT_PREV) | RIGHT_PUSH(RIGHT_PREV)) {
       ClearAllPage();
       WINDOW(0, 0, 512, 512);
@@ -169,15 +169,22 @@ void main()
       DrawWindow(WinX, WinY, WinX + WinW, WinY + WinH, 5); 
     }
 
-    //!< ページ毎のオンオフ
+    //!< ページ毎のオンオフ切替え
     if(TAB_PUSH(TAB_PREV)) {
       ++TogglePageIndex; 
       TogglePageIndex %= COUNTOF(TogglePages);
       VPAGE(TogglePages[TogglePageIndex]);
     }
+    //!< ページ毎のプライオリティ切替え
+    if(P_PUSH(P_PREV)) {
+      ++TogglePriIndex; 
+      TogglePriIndex %= COUNTOF(TogglePris);
+      PRIORITY(TogglePris[TogglePriIndex]);
+    }
     UP_PREV = UP_CUR; DOWN_PREV = DOWN_CUR; LEFT_PREV = LEFT_CUR, RIGHT_PREV = RIGHT_CUR;
     SPACE_PREV = SPACE_CUR;
     TAB_PREV = TAB_CUR;
+    P_PREV = P_CUR;
 
     //!< ページ毎のスクロール (現状何もしてない)
     SCROLL(0, 0, 0);

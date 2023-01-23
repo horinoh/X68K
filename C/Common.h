@@ -92,34 +92,6 @@ enum {
 //!< int HSVTORGB(H, S, V);
 #pragma endregion
 
-#pragma region PRIORITY
-enum {
-  VIDEO_CTRL_REG1 = 0xe82500,
-  VIDEO_CTRL_REG2 = 0xe82600,
-};
-
-#define GP_PAGE_PRI0(_Page) (_Page & 0x3)
-#define GP_PAGE_PRI1(_Page) (GP_PAGE_PRI0(_Page) << 2)
-#define GP_PAGE_PRI2(_Page) (GP_PAGE_PRI0(_Page) << 4)
-#define GP_PAGE_PRI3(_Page) (GP_PAGE_PRI0(_Page) << 6)
-#define GP_PAGE_PRI(_Pri0Page, _Pri1Page, _Pri2Page, _Pri3Page) (GP_PAGE_PRI0(_Pri0Page) | GP_PAGE_PRI1(_Pri1Page) | GP_PAGE_PRI2(_Pri2Page) | GP_PAGE_PRI3(_Pri3Page))
-
-//!< グラフィック画面
-//!<    1 枚の場合は以下を使用すること
-//!<      GP_PAGE_PRI(0, 1, 2, 3) 
-//!<    2 枚の場合は(どちらが手前かにより)以下のいずれかを使用すること
-//!<      GP_PAGE_PRI(0, 1, 2, 3)
-//!<      GP_PAGE_PRI(2, 3, 0, 1)
-
-//!< グラフィック(GP)、テキスト(TX)、スプライト(SPP) のプライオリティ [0, 2]
-#define GP_PRI(_Pri) ((_Pri & 0x3) << 8)
-#define TX_PRI(_Pri) ((_Pri & 0x3) << 10)
-#define SP_PRI(_Pri) ((_Pri & 0x3) << 12)
-
-//!< 例) 
-//!<    VIDEO_CTRL_REG1 =  (GP_PRI(0) | TX_PRI(1) | SP_PRI(2)) | GP_PAGE_PRI(0, 1, 2, 3)
-#pragma endregion
-
 #pragma region KEY_INPUT
 /*
         0   1   2   3   4   5   6   7 (BIT)
@@ -158,6 +130,7 @@ enum {
 #define SPACE_PUSH(_Prev) IS_PUSH(6, 5, _Prev)
 #define SHIFT_ON IS_ON(14, 0)
 #define CTRL_ON IS_ON(15, 0)
+#define CTRL_PUSH(_Prev) IS_PUSH(15, 0, _Prev)
 
 #define LEFT_ON IS_ON(7, 3)
 #define LEFT_PUSH(_Prev) IS_PUSH(7, 3, _Prev)
@@ -182,6 +155,7 @@ enum {
 #define E_ON IS_ON(2, 3)
 #define T_ON IS_ON(2, 5)
 #define P_ON IS_ON(3, 2)
+#define P_PUSH(_Prev) IS_PUSH(3, 2, _Prev)
 #define A_ON IS_ON(3, 6)
 #define A_PUSH(_Prev) IS_PUSH(3, 6, _Prev)
 #define S_ON IS_ON(3, 7)
