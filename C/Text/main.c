@@ -22,8 +22,7 @@
 //0,0,0,0,1,1,1,0, 0,1,1,1,0,0,0,0,
 //0,0,0,3,3,3,0,0, 0,0,3,3,3,0,0,0,
 //0,0,3,3,3,3,0,0, 0,0,3,3,3,3,0,0,
-
-const uint16_t TextData[4][16] = {
+const uint16_t TextData[][16] = {
   {
     PLANE0(0,0,0,0,0,1,1,1, 1,1,0,0,0,0,0,0),
     PLANE0(0,0,0,0,1,1,1,1, 1,1,1,1,1,0,0,0),
@@ -102,8 +101,6 @@ const uint16_t TextData[4][16] = {
   },
 };
 
-// void	TXRASCPY(int, int, int);
-
 void main()
 { 
   const int PrevCRT = CRTMOD(-1);
@@ -111,6 +108,7 @@ void main()
   B_CUROFF();
   B_CLR_AL();
 
+  //TPALET2(0, COL_BLACK);
   TPALET2(1, COL_RED);
   TPALET2(2, COL_YELLOW);
   TPALET2(3, COL_GRAY);
@@ -124,31 +122,36 @@ void main()
 
   struct XLINEPTR XLine = { .vram_page = 0, .x = 32, .y = 32, .x1 = 32+8, .line_style = 0xf7f7 };
   TXXLINE(&XLine);
-  struct YLINEPTR YLine = { .vram_page = 0, .x = 32, .y = 32, .y1 = 32+8, .line_style = 0xf7f7 };
+  struct YLINEPTR YLine = { .vram_page = 0, .x = 32 + 16, .y = 32 + 8, .y1 = 32+8, .line_style = 0xf7f7 };
   TXYLINE(&YLine);
   //struct TLINEPTR Line = { .vram_page = 0, .x = 32, .y = 32, .x1 = 32+8, .y1 = 32+8, .line_style = 0xf7f7 };
   //TXLINE(&Line);
 
-  struct TBOXPTR Box = { .vram_page = 0, .x = 64, .y = 64, .x1 = 64, .y1 = 64, .line_style = 0x7f7f };
+  struct TBOXPTR Box = { .vram_page = 0, .x = 64, .y = 64, .x1 = 32, .y1 = 32, .line_style = 0x7f7f };
   TXBOX(&Box);
-  struct TXFILLPTR Fill = { .vram_page = 0, .x = 128, .y = 128, .x1 = 64, .y1 = 64, .fill_patn = 0xffff };
+  struct TXFILLPTR Fill = { .vram_page = 0, .x = 128, .y = 128, .x1 = 32, .y1 = 32, .fill_patn = 0xffff };
   TXFILL(&Fill);
 
-  // struct XLINEPTR XLine1 = { .vram_page = 1, .x = 32, .y = 32+10, .x1 = 64, .line_style = 0xf7f7 };
-  // TXXLINE(&XLine1);
-  // struct XLINEPTR XLine2 = { .vram_page = 2, .x = 32, .y = 32+20, .x1 = 64, .line_style = 0xf7f7 };
-  // TXXLINE(&XLine2);
-  // struct XLINEPTR XLine3 = { .vram_page = 3, .x = 32, .y = 32+30, .x1 = 64, .line_style = 0xf7f7 };
-  // TXXLINE(&XLine3);
-
-  //!< 色が反転される
-  struct TREVPTR Rev = { .vram_page = 0, .x = 0, .y = 0, .x1 = 256, .y1 = 256 };
-  TXREV(&Rev);
-  TXREV(&Rev);
-
+  //!< 単位は 4 ラスタ単位
+  TXRASCPY(RAS_SRC_DST(0, 32), 4, RAS_PLANE_ALL | RAS_DIR_INC);
+  TXRASCPY(RAS_SRC_DST(0, 36), 4, RAS_PLANE0 | RAS_DIR_INC);
+  TXRASCPY(RAS_SRC_DST(0, 40), 4, RAS_PLANE1 | RAS_DIR_INC);
+  TXRASCPY(RAS_SRC_DST(0, 44), 4, RAS_PLANE2 | RAS_DIR_INC);
+  TXRASCPY(RAS_SRC_DST(0, 48), 4, RAS_PLANE3 | RAS_DIR_INC);
+  TXRASCPY(RAS_SRC_DST(0, 52), 4, RAS_PLANE_ALL | RAS_DIR_INC);
+  
+  int TAB_PREV = 0;
   while (1)
   {      
     if(ESC_ON) { break; }
+
+    int TAB_CUR = TAB_ON;
+    if(TAB_PUSH(TAB_PREV)) {
+      //!< 色が反転される
+      struct TREVPTR Rev = { .vram_page = 0, .x = 0, .y = 0, .x1 = 256, .y1 = 256 };
+      TXREV(&Rev);
+    }
+    TAB_PREV = TAB_CUR;
   }
   
   B_CURON();

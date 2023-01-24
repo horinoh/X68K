@@ -115,7 +115,7 @@ void main()
   int TogglePageIndex = 0;
 
   //!< ページ毎のプライオリティ切替え
-  int TogglePris[] = { GP_PAGE_PRI(0, 1, 2, 3), GP_PAGE_PRI(0, 2, 1, 3), GP_PAGE_PRI(0, 3, 1, 2), GP_PAGE_PRI(3, 0, 1, 2), GP_PAGE_PRI(3, 2, 1, 0), };
+  int TogglePris[] = { GP_4PAGE_PRI(0, 1, 2, 3), GP_4PAGE_PRI(0, 2, 1, 3), GP_4PAGE_PRI(0, 3, 1, 2), GP_4PAGE_PRI(3, 0, 1, 2), GP_4PAGE_PRI(3, 2, 1, 0), };
   int TogglePriIndex = 0;
 
   //!< 垂直同期
@@ -127,7 +127,7 @@ void main()
 
     if(ESC_ON) { break; }
 
-    if(A_ON) {
+    if(S_ON) {
       //!< A 押しながらでウインドウサイズ変更
       if(UP_ON) { --WinH;}
       if(DOWN_ON) { ++WinH; }
