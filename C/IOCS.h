@@ -6,6 +6,15 @@
 enum {
   IOCS_PRIORITY = 0x92,
   IOCS_CRTMOD2 = 0x93,
+
+  IOCS_PENCOLOR = 0x95,
+
+  IOCS_MASK_GPUT = 0x98,
+  IOCS_GPUT = 0x99,
+
+  IOCS_GPTRN = 0x9a,
+  IOCS_BK_GPTRN = 0x9b,
+  IOCS_X_GPTRN = 0x9c,
 };
 
 #pragma region PRIORITY
@@ -32,9 +41,71 @@ enum {
 
 //!< 例) 
 //!<    PRIORITY((GP_PRI(0) | TX_PRI(1) | SP_PRI(2)) | GP_PAGE_PRI(0, 1, 2, 3));
-void PRIORITY(const uint16_t lhs)
+uint16_t PRIORITY(const uint16_t rhs)
 {
-  struct REGS In = { .d0 = IOCS_PRIORITY, .d1 = lhs };
+  struct REGS In = { .d0 = IOCS_PRIORITY, .d1 = rhs };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+  return Out.d0; //!< 変更前の値
+}
+
+enum {
+  GPUT_COLOR_16 = 0x000f,
+  GPUT_COLOR_256 = 0x00ff,
+  GPUT_COLOR_65536 = 0xffff,
+};
+struct GPUTPTR
+{
+  uint16_t x1;
+  uint16_t y1;
+  uint16_t color_mode;
+  uint16_t buf_start;
+};
+uint16_t MASK_GPUT(const uint16_t x, const uint16_t y, const uint16_t TColor, const struct GPUTPTR* Ptr)
+{
+  struct REGS In = { .d0 = IOCS_MASK_GPUT, .d1 = x, .d2 = y, .d3 = TColor, .a1 = (int)Ptr };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+  return Out.d0; //!< 0:正常終了 -1:色モードが違う
+}
+uint16_t GPUT(const uint16_t x, const uint16_t y, const struct GPUTPTR* Ptr)
+{
+  struct REGS In = { .d0 = IOCS_GPUT, .d1 = x, .d2 = y, .a1 = (int)Ptr };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+  return Out.d0; //!< 0:正常終了 -1:色モードが違う
+}
+
+void PENCOLOR(const uint16_t Color)
+{
+  struct REGS In = { .d0 = IOCS_PENCOLOR, .d1 = Color };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+}
+struct GPTRNPTR
+{
+  uint16_t x1;
+  uint16_t y1;
+  uint16_t fill_patn;
+};
+//!< PENCOLOR() で指定した色でパターンを描画
+void GPTRN(const uint16_t x, const uint16_t y, const struct GPTRNPTR* Ptr)
+{
+  struct REGS In = { .d0 = IOCS_GPTRN, .d1 = x, .d2 = y, .a1 = (int)Ptr };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+}
+//!< PENCOLOR() で指定した色でパターンを描画 (背景色を指定)
+void BK_GPTRN(const uint16_t x, const uint16_t y, const uint16_t BColor, const struct GPTRNPTR* Ptr)
+{
+  struct REGS In = { .d0 = IOCS_BK_GPTRN, .d1 = x, .d2 = y, .d3 = BColor, .a1 = (int)Ptr };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+}
+//!< PENCOLOR() で指定した色でパターンを描画 (拡大指定[1, 1023])
+void X_GPTRN(const uint16_t x, const uint16_t y, const uint16_t SclX, const uint16_t SclY, const struct GPTRNPTR* Ptr)
+{
+  struct REGS In = { .d0 = IOCS_X_GPTRN, .d1 = x, .d2 = y, .d3 = SclX, .d4 = SclY, .a1 = (int)Ptr };
   struct REGS Out;
   TRAP15(&In, &Out);
 }
@@ -84,11 +155,12 @@ enum {
 
 //!< 例) 
 //!<    CRTMOD2(EN_TRNSP(TRNSP_ON_TX | TRNSP_ON_GP) | (SP_ON | TX_ON | GP_PAGE1_ON | GP_PAGE0_ON));
-void CRTMOD2(const uint16_t lhs)
+uint16_t CRTMOD2(const uint16_t rhs)
 {
-  struct REGS In = { .d0 = IOCS_CRTMOD2, .d1 = lhs };
+  struct REGS In = { .d0 = IOCS_CRTMOD2, .d1 = rhs };
   struct REGS Out;
   TRAP15(&In, &Out);
+  return Out.d0; //!< 変更前の値
 }
 #pragma endregion
 

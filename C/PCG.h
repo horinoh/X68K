@@ -6,8 +6,6 @@
 #define PCG_8X8_SIZE 32
 #define PCG_16X16_SIZE 128
 
-#define PIX2(_L, _R) ((_L & 0xf) << 4) | (_R & 0xf)
-
 //!< SP_DEFCG() —p
 enum {
   PCG_PAT_8X8,
