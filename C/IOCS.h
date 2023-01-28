@@ -9,6 +9,7 @@ enum {
 
   IOCS_PENCOLOR = 0x95,
 
+  IOCS_GGET = 0x97,
   IOCS_MASK_GPUT = 0x98,
   IOCS_GPUT = 0x99,
 
@@ -48,34 +49,45 @@ uint16_t PRIORITY(const uint16_t rhs)
   TRAP15(&In, &Out);
   return Out.d0; //!< 変更前の値
 }
+#pragma endregion
 
+#pragma region PATTERN_DRAW
 enum {
   GPUT_COLOR_16 = 0x000f,
   GPUT_COLOR_256 = 0x00ff,
   GPUT_COLOR_65536 = 0xffff,
 };
-struct GPUTPTR
+//!< ヘッダに続くメモリにデータを配置して使用する
+struct GPUTHEADER
 {
   uint16_t x1;
   uint16_t y1;
   uint16_t color_mode;
-  uint16_t buf_start;
 };
-uint16_t MASK_GPUT(const uint16_t x, const uint16_t y, const uint16_t TColor, const struct GPUTPTR* Ptr)
+typedef struct GPUTHEADER GPUTHEADER;
+void GGET(const uint16_t x, const uint16_t y, GPUTHEADER* Ptr)
 {
-  struct REGS In = { .d0 = IOCS_MASK_GPUT, .d1 = x, .d2 = y, .d3 = TColor, .a1 = (int)Ptr };
+  struct REGS In = { .d0 = IOCS_GGET, .d1 = x, .d2 = y, .a1 = (int)Ptr };
+  struct REGS Out;
+  TRAP15(&In, &Out);
+}
+uint16_t MASK_GPUT(const uint16_t x, const uint16_t y, const uint16_t AlphaIndex, const GPUTHEADER* Ptr)
+{
+  struct REGS In = { .d0 = IOCS_MASK_GPUT, .d1 = x, .d2 = y, .d3 = AlphaIndex, .a1 = (int)Ptr };
   struct REGS Out;
   TRAP15(&In, &Out);
   return Out.d0; //!< 0:正常終了 -1:色モードが違う
 }
-uint16_t GPUT(const uint16_t x, const uint16_t y, const struct GPUTPTR* Ptr)
+uint16_t GPUT(const uint16_t x, const uint16_t y, const GPUTHEADER* Ptr)
 {
   struct REGS In = { .d0 = IOCS_GPUT, .d1 = x, .d2 = y, .a1 = (int)Ptr };
   struct REGS Out;
   TRAP15(&In, &Out);
   return Out.d0; //!< 0:正常終了 -1:色モードが違う
 }
+#pragma endregion
 
+#pragma region BIT_PATTERN_DRAW
 void PENCOLOR(const uint16_t Color)
 {
   struct REGS In = { .d0 = IOCS_PENCOLOR, .d1 = Color };

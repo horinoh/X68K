@@ -1,17 +1,64 @@
 #include <stdio.h>
 #include <iocslib.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "Common.h"
 #include "Graphics.h"
 #include "Interrupt.h"
 #include "IOCS.h"
 
+//0,0,0,0,0,1,1,1, 1,1,0,0,0,0,0,0,
+//0,0,0,0,1,1,1,1, 1,1,1,1,1,0,0,0,
+//0,0,0,0,3,3,3,2, 2,3,2,0,0,0,0,0,
+//0,0,0,3,2,3,2,2, 2,3,2,2,2,0,0,0,
+//0,0,0,3,2,3,3,2, 2,2,3,2,2,2,0,0,
+//0,0,0,3,3,2,2,2, 2,3,3,3,3,0,0,0,
+//0,0,0,0,0,2,2,2, 2,2,2,2,0,0,0,0,
+//0,0,0,0,3,3,1,3, 3,3,0,0,0,0,0,0,
+
+//0,0,0,3,3,3,1,3, 3,1,3,3,3,0,0,0,
+//0,0,3,3,3,3,1,1, 1,1,3,3,3,3,0,0,
+//0,0,2,2,3,1,2,1, 1,2,1,3,2,2,0,0,
+//0,0,2,2,2,1,1,1, 1,1,1,2,2,2,0,0,
+//0,0,2,2,1,1,1,1, 1,1,1,1,2,2,0,0,
+//0,0,0,0,1,1,1,0, 0,1,1,1,0,0,0,0,
+//0,0,0,3,3,3,0,0, 0,0,3,3,3,0,0,0,
+//0,0,3,3,3,3,0,0, 0,0,3,3,3,3,0,0,
+
+//!< 16 色の場合は uint16_t に 4 ドット格納される
+uint16_t PalPattern[] = {
+  DOT4U16(0,0,0,0), DOT4U16(0,1,1,1), DOT4U16(1,1,0,0), DOT4U16(0,0,0,0),
+  DOT4U16(0,0,0,0), DOT4U16(1,1,1,1), DOT4U16(1,1,1,1), DOT4U16(1,0,0,0),
+  DOT4U16(0,0,0,0), DOT4U16(3,3,3,2), DOT4U16(2,3,2,0), DOT4U16(0,0,0,0),
+  DOT4U16(0,0,0,3), DOT4U16(2,3,2,2), DOT4U16(2,3,2,2), DOT4U16(2,0,0,0),
+  DOT4U16(0,0,0,3), DOT4U16(2,3,3,2), DOT4U16(2,2,3,2), DOT4U16(2,2,0,0),
+  DOT4U16(0,0,0,3), DOT4U16(3,2,2,2), DOT4U16(2,3,3,3), DOT4U16(3,0,0,0),
+  DOT4U16(0,0,0,0), DOT4U16(0,2,2,2), DOT4U16(2,2,2,2), DOT4U16(0,0,0,0),
+  DOT4U16(0,0,0,0), DOT4U16(3,3,1,3), DOT4U16(3,3,0,0), DOT4U16(0,0,0,0),
+
+  DOT4U16(0,0,0,3), DOT4U16(3,3,1,3), DOT4U16(3,1,3,3), DOT4U16(3,0,0,0),
+  DOT4U16(0,0,3,3), DOT4U16(3,3,1,1), DOT4U16(1,1,3,3), DOT4U16(3,3,0,0),
+  DOT4U16(0,0,2,2), DOT4U16(3,1,2,1), DOT4U16(1,2,1,3), DOT4U16(2,2,0,0),
+  DOT4U16(0,0,2,2), DOT4U16(2,1,1,1), DOT4U16(1,1,1,2), DOT4U16(2,2,0,0),
+  DOT4U16(0,0,2,2), DOT4U16(1,1,1,1), DOT4U16(1,1,1,1), DOT4U16(2,2,0,0),
+  DOT4U16(0,0,0,0), DOT4U16(1,1,1,0), DOT4U16(0,1,1,1), DOT4U16(0,0,0,0),
+  DOT4U16(0,0,0,3), DOT4U16(3,3,0,0), DOT4U16(0,0,3,3), DOT4U16(3,0,0,0),
+  DOT4U16(0,0,3,3), DOT4U16(3,3,0,0), DOT4U16(0,0,3,3), DOT4U16(3,3,0,0),
+};
+
 //!< 文字列表示用
 char Str[8];
 //!< ペイント系でバッファを必要とする機能がある (十分なサイズを用意しておけば大丈夫？)
 uint8_t Buf[256];
 
+enum {
+  RED_IDX = 1,
+  GREEN_IDX = 2,
+  BLUE_IDX = 3,
+  YELLOW_IDX = 4,
+  WHITE_IDX = 5,
+};
 void DrawPage(int Page, int x, int y, int Color)
 {
   //!< アクティブページを変更
@@ -53,6 +100,64 @@ void DrawPage(int Page, int x, int y, int Color)
     //!< #TODO
     // struct PUTPTR Put = { .x1 = 0, .y1 = 0, .x2 = 32, .y2 = 32, .buf_start = (UBYTE *)&Buf, .buf_end = (UBYTE *)&Buf[COUNTOF(Buf) - 1] };
     // PUTGRM(&Put);
+
+    //!< (ペンカラーによる) ビットパターン描画
+    {
+      uint16_t Data[] = {
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+      };
+      struct GPTRNPTR Pattern = { .x1 = 16, .y1 = 16, .fill_patn = 0xffff };
+   
+      //!< 「赤」でパターン描画
+      PENCOLOR(RED_IDX);
+      GPTRN(0, 128, &Pattern);
+
+      //!< 「緑」でパターン描画 (バックカラー「白」指定)
+      PENCOLOR(GREEN_IDX);
+      BK_GPTRN(32, 128, WHITE_IDX, &Pattern);
+
+      //!< 「青」でパターン描画 (拡大表示)
+      PENCOLOR(BLUE_IDX);
+      X_GPTRN(64, 128, 2, 2, &Pattern);
+    }
+
+    //!< (パレット使用による) パターン描画
+    {
+      //!< ヘッダ + データ分メモリを確保
+      void* Top = malloc(sizeof(GPUTHEADER) + sizeof(PalPattern));
+      //!< ヘッダ
+      GPUTHEADER* Header = (GPUTHEADER*)Top;
+      //!< ヘッダ作成
+      Header->x1 = 16, Header->y1 = 16, Header->color_mode = GPUT_COLOR_16;
+      //!< データ
+      void* Data = Top + sizeof(GPUTHEADER);
+      //!< データ作成
+      memcpy(Data, PalPattern, sizeof(PalPattern));
+      
+      //!< パターンを描画
+      GPUT(0, 64, Header);
+
+      //!< パレット 0 を抜き色扱いとして、パターンを描画
+      MASK_GPUT(16, 64, 0, Header);
+
+      free(Top);
+    }
   }
 }
 void ClearAllPage()
@@ -82,6 +187,7 @@ void main()
   //!<    4 面 512x512 16色
   //!<    2 面 512x512 256色
   CRTMOD(CRT_MODE_HIGH_256X256_T16G16_512);
+  //CRTMOD(CRT_MODE_HIGH_256X256_T16G256_512);
   
   B_CUROFF();
   G_CLR_ON(); 
@@ -95,11 +201,11 @@ void main()
   //!<    16色モード [0, 15]
   //!<    256色モード [0, 255]
   //!<    65536色モード [0, 65535]
-  GPALET(1, COL_RED);
-  GPALET(2, COL_GREEN);
-  GPALET(3, COL_BLUE);
-  GPALET(4, COL_YELLOW);
-  GPALET(5, COL_WHITE); 
+  GPALET(RED_IDX, COL_RED);
+  GPALET(GREEN_IDX, COL_GREEN);
+  GPALET(BLUE_IDX, COL_BLUE);
+  GPALET(YELLOW_IDX, COL_YELLOW);
+  GPALET(WHITE_IDX, COL_WHITE); 
 
   DrawAllPage();
 

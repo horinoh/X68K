@@ -10,8 +10,10 @@
 #define TO_RADIAN(_Deg) ((_Deg) * PI / 180.0f)
 #define TO_DEGREE(_Rad) ((_Rad) * 180.0f / PI)
 
-#define PIX2(_L, _R) ((_L & 0xf) << 4) | (_R & 0xf)
-#define PIX8(_7, _6, _5, _4, _3, _2, _1, _0) ((_7 << 7) | (_6 << 6) | (_5 << 5) | (_4 << 4) | (_3 << 3) | (_2 << 2) | (_1 << 1) | (_0 << 0))
+#define DOT2U16(_1, _0) (((_1 & 0xf) << 4) | (_0 & 0xf))
+#define DOT4U16(_3, _2, _1, _0) ((DOT2U16(_3, _2) << 8) | DOT2U16(_1, _0))
+#define DOT8U8(_7, _6, _5, _4, _3, _2, _1, _0) ((_7 << 7) | (_6 << 6) | (_5 << 5) | (_4 << 4) | (_3 << 3) | (_2 << 2) | (_1 << 1) | (_0 << 0))
+
 #define SWAP_ENDIAN16(_Val) ((((_Val) & 0xff00) >> 8) | (((_Val) & 0x00ff) << 8))
 
 static fpos_t  GetFileSize(FILE* Fp)
@@ -42,7 +44,7 @@ enum {
   ON = 1,
 };
 
-//!< CRTMOD() —p
+//!< CRTMOD()
 enum {
   CRT_MODE_HIGH_512X512_T16G16_1024,
   CRT_MODE_LOW_512X512_T16G16_1024,

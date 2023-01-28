@@ -1,6 +1,6 @@
 #pragma once
 
-//!< VDISPST() 用
+//!< VDISPST()
 enum {
     ON_VBLANK,
     ON_VDISP,
