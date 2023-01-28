@@ -94,28 +94,28 @@ void PENCOLOR(const uint16_t Color)
   struct REGS Out;
   TRAP15(&In, &Out);
 }
-struct GPTRNPTR
+struct GPTRNHEADER
 {
   uint16_t x1;
   uint16_t y1;
-  uint16_t fill_patn;
 };
+typedef struct GPTRNHEADER GPTRNHEADER;
 //!< PENCOLOR() で指定した色でパターンを描画
-void GPTRN(const uint16_t x, const uint16_t y, const struct GPTRNPTR* Ptr)
+void GPTRN(const uint16_t x, const uint16_t y, const GPTRNHEADER* Ptr)
 {
   struct REGS In = { .d0 = IOCS_GPTRN, .d1 = x, .d2 = y, .a1 = (int)Ptr };
   struct REGS Out;
   TRAP15(&In, &Out);
 }
 //!< PENCOLOR() で指定した色でパターンを描画 (背景色を指定)
-void BK_GPTRN(const uint16_t x, const uint16_t y, const uint16_t BColor, const struct GPTRNPTR* Ptr)
+void BK_GPTRN(const uint16_t x, const uint16_t y, const uint16_t BackIndex, const GPTRNHEADER* Ptr)
 {
-  struct REGS In = { .d0 = IOCS_BK_GPTRN, .d1 = x, .d2 = y, .d3 = BColor, .a1 = (int)Ptr };
+  struct REGS In = { .d0 = IOCS_BK_GPTRN, .d1 = x, .d2 = y, .d3 = BackIndex, .a1 = (int)Ptr };
   struct REGS Out;
   TRAP15(&In, &Out);
 }
-//!< PENCOLOR() で指定した色でパターンを描画 (拡大指定[1, 1023])
-void X_GPTRN(const uint16_t x, const uint16_t y, const uint16_t SclX, const uint16_t SclY, const struct GPTRNPTR* Ptr)
+//!< PENCOLOR() で指定した色でパターンを描画 (拡大指定 [1, 1023])
+void X_GPTRN(const uint16_t x, const uint16_t y, const uint16_t SclX, const uint16_t SclY, const GPTRNHEADER* Ptr)
 {
   struct REGS In = { .d0 = IOCS_X_GPTRN, .d1 = x, .d2 = y, .d3 = SclX, .d4 = SclY, .a1 = (int)Ptr };
   struct REGS Out;

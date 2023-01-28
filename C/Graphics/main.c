@@ -25,7 +25,6 @@
 //0,0,0,0,1,1,1,0, 0,1,1,1,0,0,0,0,
 //0,0,0,3,3,3,0,0, 0,0,3,3,3,0,0,0,
 //0,0,3,3,3,3,0,0, 0,0,3,3,3,3,0,0,
-
 //!< 16 色の場合は uint16_t に 4 ドット格納される
 uint16_t PalPattern[] = {
   DOT4U16(0,0,0,0), DOT4U16(0,1,1,1), DOT4U16(1,1,0,0), DOT4U16(0,0,0,0),
@@ -47,12 +46,32 @@ uint16_t PalPattern[] = {
   DOT4U16(0,0,3,3), DOT4U16(3,3,0,0), DOT4U16(0,0,3,3), DOT4U16(3,3,0,0),
 };
 
+//0, 0, 0, 1, 1, 0, 0, 0,
+//0, 0, 1, 1, 1, 1, 0, 0,
+//0, 1, 1, 1, 1, 1, 1, 0,
+//1, 1, 0, 1, 1, 0, 1, 1,
+//1, 1, 1, 1, 1, 1, 1, 1,
+//0, 0, 1, 0, 0, 1, 0, 0,
+//0, 1, 0, 1, 1, 0, 1, 0,
+//1, 0, 1, 0, 0, 1, 0, 1,
+uint16_t BitPattern[] = {
+  DOT8X2U16(0, 0, 0, 1, 1, 0, 0, 0,
+            0, 0, 1, 1, 1, 1, 0, 0),
+  DOT8X2U16(0, 1, 1, 1, 1, 1, 1, 0,
+            1, 1, 0, 1, 1, 0, 1, 1),
+  DOT8X2U16(1, 1, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 0, 1, 0, 0),
+  DOT8X2U16(0, 1, 0, 1, 1, 0, 1, 0,
+            1, 0, 1, 0, 0, 1, 0, 1),
+};
+
 //!< 文字列表示用
 char Str[8];
 //!< ペイント系でバッファを必要とする機能がある (十分なサイズを用意しておけば大丈夫？)
 uint8_t Buf[256];
 
 enum {
+  ALPHA_IDX = 0,
   RED_IDX = 1,
   GREEN_IDX = 2,
   BLUE_IDX = 3,
@@ -101,60 +120,51 @@ void DrawPage(int Page, int x, int y, int Color)
     // struct PUTPTR Put = { .x1 = 0, .y1 = 0, .x2 = 32, .y2 = 32, .buf_start = (UBYTE *)&Buf, .buf_end = (UBYTE *)&Buf[COUNTOF(Buf) - 1] };
     // PUTGRM(&Put);
 
-    //!< (ペンカラーによる) ビットパターン描画
-    {
-      uint16_t Data[] = {
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-        0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
-      };
-      struct GPTRNPTR Pattern = { .x1 = 16, .y1 = 16, .fill_patn = 0xffff };
-   
-      //!< 「赤」でパターン描画
-      PENCOLOR(RED_IDX);
-      GPTRN(0, 128, &Pattern);
-
-      //!< 「緑」でパターン描画 (バックカラー「白」指定)
-      PENCOLOR(GREEN_IDX);
-      BK_GPTRN(32, 128, WHITE_IDX, &Pattern);
-
-      //!< 「青」でパターン描画 (拡大表示)
-      PENCOLOR(BLUE_IDX);
-      X_GPTRN(64, 128, 2, 2, &Pattern);
-    }
-
-    //!< (パレット使用による) パターン描画
+    //!< (パレットによる) パターン描画
     {
       //!< ヘッダ + データ分メモリを確保
       void* Top = malloc(sizeof(GPUTHEADER) + sizeof(PalPattern));
       //!< ヘッダ
       GPUTHEADER* Header = (GPUTHEADER*)Top;
       //!< ヘッダ作成
-      Header->x1 = 16, Header->y1 = 16, Header->color_mode = GPUT_COLOR_16;
-      //!< データ
-      void* Data = Top + sizeof(GPUTHEADER);
+      Header->x1 = 16; Header->y1 = 16; Header->color_mode = GPUT_COLOR_16;
       //!< データ作成
-      memcpy(Data, PalPattern, sizeof(PalPattern));
-      
-      //!< パターンを描画
-      GPUT(0, 64, Header);
+      memcpy(Top + sizeof(GPUTHEADER), PalPattern, sizeof(PalPattern));
+      {
+        //!< パターンを描画
+        GPUT(Circle.x - Circle.radius + 8, Circle.y + Circle.radius, Header);
 
-      //!< パレット 0 を抜き色扱いとして、パターンを描画
-      MASK_GPUT(16, 64, 0, Header);
+        //!< パレット 0(ALPHA_IDX) を抜き色扱いとして、パターンを描画
+        MASK_GPUT(Circle.x - Circle.radius + 8 + 16, Circle.y + Circle.radius , ALPHA_IDX, Header);
+      }
+     
+      free(Top);
+    }
+
+    //!< (ペンカラーによる) ビットパターン描画
+    {
+      //!< ヘッダ + データ分メモリを確保
+      void* Top = malloc(sizeof(GPTRNHEADER) + sizeof(BitPattern));
+      //!< ヘッダ
+      GPTRNHEADER* Header = (GPTRNHEADER*)Top;
+      //!< ヘッダ作成
+      Header->x1 = 8; Header->y1 = 8;
+      //!< データ作成
+      memcpy(Top + sizeof(GPTRNHEADER), BitPattern, sizeof(BitPattern));
+
+      {
+        //!< 「緑」でパターン描画
+        PENCOLOR(GREEN_IDX);
+        GPTRN(Circle.x - Circle.radius + 12, Circle.y + Circle.radius + 16, Header);
+
+        //!< 「青」でパターン描画 (バックカラー「白」)
+        PENCOLOR(BLUE_IDX);
+        BK_GPTRN(Circle.x - Circle.radius + 12 + 8, Circle.y + Circle.radius + 16, WHITE_IDX, Header);
+
+        //!< 「黄」でパターン描画 (拡大表示)
+        PENCOLOR(YELLOW_IDX);
+        X_GPTRN(Circle.x - Circle.radius + 12 + 8 + 8, Circle.y + Circle.radius + 16, 7, 7, Header);
+      }
 
       free(Top);
     }

@@ -13,6 +13,7 @@
 #define DOT2U16(_1, _0) (((_1 & 0xf) << 4) | (_0 & 0xf))
 #define DOT4U16(_3, _2, _1, _0) ((DOT2U16(_3, _2) << 8) | DOT2U16(_1, _0))
 #define DOT8U8(_7, _6, _5, _4, _3, _2, _1, _0) ((_7 << 7) | (_6 << 6) | (_5 << 5) | (_4 << 4) | (_3 << 3) | (_2 << 2) | (_1 << 1) | (_0 << 0))
+#define DOT8X2U16(_15, _14, _13, _12, _11, _10, _09, _08, _07, _06, _05, _04, _03, _02, _01, _00) ((DOT8U8(_15, _14, _13, _12, _11, _10, _09, _08) << 8) | DOT8U8(_07, _06, _05, _04, _03, _02, _01, _00))
 
 #define SWAP_ENDIAN16(_Val) ((((_Val) & 0xff00) >> 8) | (((_Val) & 0x00ff) << 8))
 
@@ -27,14 +28,6 @@ static fpos_t  GetFileSize(FILE* Fp)
         else { puts("fgetpos failed"); }
       }
       else { puts("fseek(SEEK_END) failed"); }
-  }
-  return Size;
-}
-static fpos_t LoadFile(FILE* Fp)
-{
-  const fpos_t Size = GetFileSize(Fp);
-  if(Size) {
-
   }
   return Size;
 }
