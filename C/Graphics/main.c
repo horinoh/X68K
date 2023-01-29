@@ -8,6 +8,20 @@
 #include "Interrupt.h"
 #include "IOCS.h"
 
+//!< 半透明を使用する場合は、カラーインデックスは奇数でないとならない
+enum {
+  ALPHA_IDX = 0,
+  A_RED_IDX = 1, RED_IDX = 2,
+  A_GREEN_IDX = 3, GREEN_IDX = 4,
+  A_BLUE_IDX = 5, BLUE_IDX = 6,
+  A_YELLOW_IDX = 7, YELLOW_IDX = 8,
+  A_WHITE_IDX = 9, WHITE_IDX = 10,
+};
+
+#define A ALPHA_IDX
+#define R RED_IDX
+#define G GREEN_IDX
+#define B BLUE_IDX
 //0,0,0,0,0,1,1,1, 1,1,0,0,0,0,0,0,
 //0,0,0,0,1,1,1,1, 1,1,1,1,1,0,0,0,
 //0,0,0,0,3,3,3,2, 2,3,2,0,0,0,0,0,
@@ -27,24 +41,28 @@
 //0,0,3,3,3,3,0,0, 0,0,3,3,3,3,0,0,
 //!< 16 色の場合は uint16_t に 4 ドット格納される
 uint16_t PalPattern[] = {
-  DOT4U16(0,0,0,0), DOT4U16(0,1,1,1), DOT4U16(1,1,0,0), DOT4U16(0,0,0,0),
-  DOT4U16(0,0,0,0), DOT4U16(1,1,1,1), DOT4U16(1,1,1,1), DOT4U16(1,0,0,0),
-  DOT4U16(0,0,0,0), DOT4U16(3,3,3,2), DOT4U16(2,3,2,0), DOT4U16(0,0,0,0),
-  DOT4U16(0,0,0,3), DOT4U16(2,3,2,2), DOT4U16(2,3,2,2), DOT4U16(2,0,0,0),
-  DOT4U16(0,0,0,3), DOT4U16(2,3,3,2), DOT4U16(2,2,3,2), DOT4U16(2,2,0,0),
-  DOT4U16(0,0,0,3), DOT4U16(3,2,2,2), DOT4U16(2,3,3,3), DOT4U16(3,0,0,0),
-  DOT4U16(0,0,0,0), DOT4U16(0,2,2,2), DOT4U16(2,2,2,2), DOT4U16(0,0,0,0),
-  DOT4U16(0,0,0,0), DOT4U16(3,3,1,3), DOT4U16(3,3,0,0), DOT4U16(0,0,0,0),
+  DOT4U16(A,A,A,A), DOT4U16(A,R,R,R), DOT4U16(R,R,A,A), DOT4U16(A,A,A,A),
+  DOT4U16(A,A,A,A), DOT4U16(R,R,R,R), DOT4U16(R,R,R,R), DOT4U16(R,A,A,A),
+  DOT4U16(A,A,A,A), DOT4U16(B,B,B,G), DOT4U16(G,B,G,A), DOT4U16(A,A,A,A),
+  DOT4U16(A,A,A,B), DOT4U16(G,B,G,G), DOT4U16(G,B,G,G), DOT4U16(G,A,A,A),
+  DOT4U16(A,A,A,B), DOT4U16(G,B,B,G), DOT4U16(G,G,B,G), DOT4U16(G,G,A,A),
+  DOT4U16(A,A,A,B), DOT4U16(B,G,G,G), DOT4U16(G,B,B,B), DOT4U16(B,A,A,A),
+  DOT4U16(A,A,A,A), DOT4U16(A,G,G,G), DOT4U16(G,G,G,G), DOT4U16(A,A,A,A),
+  DOT4U16(A,A,A,A), DOT4U16(B,B,R,B), DOT4U16(B,B,A,A), DOT4U16(A,A,A,A),
 
-  DOT4U16(0,0,0,3), DOT4U16(3,3,1,3), DOT4U16(3,1,3,3), DOT4U16(3,0,0,0),
-  DOT4U16(0,0,3,3), DOT4U16(3,3,1,1), DOT4U16(1,1,3,3), DOT4U16(3,3,0,0),
-  DOT4U16(0,0,2,2), DOT4U16(3,1,2,1), DOT4U16(1,2,1,3), DOT4U16(2,2,0,0),
-  DOT4U16(0,0,2,2), DOT4U16(2,1,1,1), DOT4U16(1,1,1,2), DOT4U16(2,2,0,0),
-  DOT4U16(0,0,2,2), DOT4U16(1,1,1,1), DOT4U16(1,1,1,1), DOT4U16(2,2,0,0),
-  DOT4U16(0,0,0,0), DOT4U16(1,1,1,0), DOT4U16(0,1,1,1), DOT4U16(0,0,0,0),
-  DOT4U16(0,0,0,3), DOT4U16(3,3,0,0), DOT4U16(0,0,3,3), DOT4U16(3,0,0,0),
-  DOT4U16(0,0,3,3), DOT4U16(3,3,0,0), DOT4U16(0,0,3,3), DOT4U16(3,3,0,0),
+  DOT4U16(A,A,A,B), DOT4U16(B,B,R,B), DOT4U16(B,R,B,B), DOT4U16(B,A,A,A),
+  DOT4U16(A,A,B,B), DOT4U16(B,B,R,R), DOT4U16(R,R,B,B), DOT4U16(B,B,A,A),
+  DOT4U16(A,A,G,G), DOT4U16(B,R,G,R), DOT4U16(R,G,R,B), DOT4U16(G,G,A,A),
+  DOT4U16(A,A,G,G), DOT4U16(G,R,R,R), DOT4U16(R,R,R,G), DOT4U16(G,G,A,A),
+  DOT4U16(A,A,G,G), DOT4U16(R,R,R,R), DOT4U16(R,R,R,R), DOT4U16(G,G,A,A),
+  DOT4U16(A,A,A,A), DOT4U16(R,R,R,A), DOT4U16(A,R,R,R), DOT4U16(A,A,A,A),
+  DOT4U16(A,A,A,B), DOT4U16(B,B,A,A), DOT4U16(A,A,B,B), DOT4U16(B,A,A,A),
+  DOT4U16(A,A,B,B), DOT4U16(B,B,A,A), DOT4U16(A,A,B,B), DOT4U16(B,B,A,A),
 };
+#undef A
+#undef R
+#undef G
+#undef B
 
 //0, 0, 0, 1, 1, 0, 0, 0,
 //0, 0, 1, 1, 1, 1, 0, 0,
@@ -70,15 +88,7 @@ char Str[8];
 //!< ペイント系でバッファを必要とする機能がある (十分なサイズを用意しておけば大丈夫？)
 uint8_t Buf[256];
 
-enum {
-  ALPHA_IDX = 0,
-  RED_IDX = 1,
-  GREEN_IDX = 2,
-  BLUE_IDX = 3,
-  YELLOW_IDX = 4,
-  WHITE_IDX = 5,
-};
-void DrawPage(int Page, int x, int y, int Color)
+void DrawPage(int Page, int x, int y, int Color, int AColor)
 {
   //!< アクティブページを変更
   if(0 == APAGE(Page)) {
@@ -93,7 +103,7 @@ void DrawPage(int Page, int x, int y, int Color)
     PSET(&Pset);
 
     //!< 塗りつぶし
-    struct FILLPTR Fill = { .x1 = Circle.x - Circle.radius, .y1 = Circle.y + Circle.radius, .x2 = Circle.x + Circle.radius * 3 / 2, .y2 = Circle.y + Circle.radius * 3, .color = Circle.color  };
+    struct FILLPTR Fill = { .x1 = Circle.x - Circle.radius, .y1 = Circle.y + Circle.radius, .x2 = Circle.x + Circle.radius * 3 / 2, .y2 = Circle.y + Circle.radius * 3, .color = AColor  };
     FILL(&Fill);
 
     //!< 指定座標のパレット番号を調べる
@@ -109,7 +119,7 @@ void DrawPage(int Page, int x, int y, int Color)
     LINE(&Line);
 
     //!< (境界線内側を)ペイント (バッファを使用)
-    struct PAINTPTR Paint = { .x = Circle.x + 1, .y = Circle.y, .color = Color + 1, .buf_start = (UBYTE *)&Buf, .buf_end = (UBYTE *)&Buf[COUNTOF(Buf) - 1] };
+    struct PAINTPTR Paint = { .x = Circle.x + 1, .y = Circle.y, .color = Color + 2, .buf_start = (UBYTE *)&Buf, .buf_end = (UBYTE *)&Buf[COUNTOF(Buf) - 1] };
     PAINT(&Paint);
 
     //!< #TODO
@@ -154,15 +164,15 @@ void DrawPage(int Page, int x, int y, int Color)
 
       {
         //!< 「緑」でパターン描画
-        PENCOLOR(GREEN_IDX);
+        PENCOLOR(A_GREEN_IDX);
         GPTRN(Circle.x - Circle.radius + 12, Circle.y + Circle.radius + 16, Header);
 
         //!< 「青」でパターン描画 (バックカラー「白」)
-        PENCOLOR(BLUE_IDX);
-        BK_GPTRN(Circle.x - Circle.radius + 12 + 8, Circle.y + Circle.radius + 16, WHITE_IDX, Header);
+        PENCOLOR(A_BLUE_IDX);
+        BK_GPTRN(Circle.x - Circle.radius + 12 + 8, Circle.y + Circle.radius + 16, A_WHITE_IDX, Header);
 
         //!< 「黄」でパターン描画 (拡大表示)
-        PENCOLOR(YELLOW_IDX);
+        PENCOLOR(A_YELLOW_IDX);
         X_GPTRN(Circle.x - Circle.radius + 12 + 8 + 8, Circle.y + Circle.radius + 16, 7, 7, Header);
       }
 
@@ -179,10 +189,13 @@ void ClearAllPage()
 }
 void DrawAllPage()
 {
-  DrawPage(0, 32, 32, 1);
-  DrawPage(1, 32 + 32 * 2, 32, 2);
-  DrawPage(2, 32 + 32 * 4, 32, 3);
-  DrawPage(3, 32 + 32 * 6, 32, 4);
+  //!< #TODO 半透明
+  //CRTMOD2(EN_TRNSP(TRNSP_ON_GP) | GP_ALL_PAGES_ON);
+
+  DrawPage(0, 32, 32, RED_IDX, A_RED_IDX);
+  DrawPage(1, 32 + 32 * 2, 32, GREEN_IDX, A_GREEN_IDX);
+  DrawPage(2, 32 + 32 * 4, 32, BLUE_IDX, A_BLUE_IDX);
+  DrawPage(3, 32 + 32 * 6, 32, YELLOW_IDX, A_YELLOW_IDX);
 }
 void DrawWindow(int LTx, int LTy, int RBx, int RBy, int Col)
 {
@@ -199,6 +212,7 @@ void main()
   CRTMOD(CRT_MODE_HIGH_256X256_T16G16_512);
   //CRTMOD(CRT_MODE_HIGH_256X256_T16G256_512);
   
+  B_SUPER(0);
   B_CUROFF();
   G_CLR_ON(); 
 
@@ -207,15 +221,15 @@ void main()
   
   HOME(0, 0, 0);
 
-  //!< パレット番号
+  //!< パレット番号 (半透明を使用する場合は、カラーインデックスは奇数でないとならない)
   //!<    16色モード [0, 15]
   //!<    256色モード [0, 255]
   //!<    65536色モード [0, 65535]
-  GPALET(RED_IDX, COL_RED);
-  GPALET(GREEN_IDX, COL_GREEN);
-  GPALET(BLUE_IDX, COL_BLUE);
-  GPALET(YELLOW_IDX, COL_YELLOW);
-  GPALET(WHITE_IDX, COL_WHITE); 
+  GPALET(A_RED_IDX, COL_RED); GPALET(RED_IDX, COL_RED);
+  GPALET(A_GREEN_IDX, COL_GREEN); GPALET(GREEN_IDX, COL_GREEN);
+  GPALET(A_BLUE_IDX, COL_BLUE); GPALET(BLUE_IDX, COL_BLUE);
+  GPALET(A_YELLOW_IDX, COL_YELLOW); GPALET(YELLOW_IDX, COL_YELLOW);
+  GPALET(A_WHITE_IDX, COL_WHITE); GPALET(WHITE_IDX, COL_WHITE); 
 
   DrawAllPage();
 

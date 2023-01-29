@@ -131,6 +131,8 @@ enum {
   GP_PAGE1_ON = 1 << 1,
   GP_PAGE2_ON = 1 << 2,
   GP_PAGE3_ON = 1 << 3,
+  GP_ALL_PAGES_ON = GP_PAGE3_ON | GP_PAGE2_ON | GP_PAGE1_ON | GP_PAGE0_ON,
+
   //!< ŽÀ‰æ–Ê 1024 Žž
   GP_1024_PAGE_ON = 1 << 4,
   
@@ -166,7 +168,7 @@ enum {
 #define EN_TRNSP(_Target) ((EN_SPCPRI | TRNSP_ON) | _Target)
 
 //!< —á) 
-//!<    CRTMOD2(EN_TRNSP(TRNSP_ON_TX | TRNSP_ON_GP) | (SP_ON | TX_ON | GP_PAGE1_ON | GP_PAGE0_ON));
+//!<    CRTMOD2(EN_TRNSP(TRNSP_ON_TX | TRNSP_ON_GP) | (SPRITE_ON | TEXT_ON | GP_PAGE1_ON | GP_PAGE0_ON));
 uint16_t CRTMOD2(const uint16_t rhs)
 {
   struct REGS In = { .d0 = IOCS_CRTMOD2, .d1 = rhs };
