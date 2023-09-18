@@ -183,10 +183,26 @@
 
 ## [クロス開発](https://github.com/yosshin4004/xdev68k)
 - [スプライト](https://github.com/yosshin4004/x68k_xsp)
-    - iocscall.inc が無いと怒られるので、コピーして iocsall.mac から iocscall.inc を作る
-        - iocsall.mac は xdev68k\include\xc\ 以下にある
+    - ~~iocscall.inc が無いと怒られる場合、コピーして iocsall.mac から iocscall.inc を作る ~~
+        - ~~ iocsall.mac は xdev68k\include\xc\ 以下にある ~~
+- makefile
+  - xdev68k からコピーした makefile を以下のように改変
+    ~~~
+    #EXECUTABLE = 
+
+    #INCLUDE_FLAGS = ...
+    INCLUDE_FLAGS += ...
+    
+    #C_SRCS = ...
+    
+    #ASM_SRCS = ...
+    
+    #LIBS = ...
+    LIBS += ...
+    ~~~
 - XM6 で実行
-    - (XM6 上から) Msys のディレクトリへ移動しておく
+    - (XM6 上から) Msys のディレクトリへ移動しておく 
+    - 自分の環境では「:」は 「+」の所 (覚書)
         ~~~
         $d:
         $cd XXX\xdev68k\example\hello

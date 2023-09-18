@@ -1,5 +1,5 @@
 # 実行ファイル名
-TARGET_FILE = ZMUSIC.X
+EXECUTABLE = ZMUSIC.X
 
 # *.c ソースファイル
 C_SRCS = main.c
@@ -8,7 +8,7 @@ C_SRCS = main.c
 INCLUDE_FLAGS = -I../ -I../../Zm302_l/
 
 # *.s ソースファイル
-ASM_SRCS = 
+#ASM_SRCS = 
 
 # リンク対象のライブラリファイル
 LIBS = ../../Zm302_l/ZMSC3LIB.L

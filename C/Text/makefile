@@ -1,5 +1,5 @@
 # 実行ファイル名
-TARGET_FILE = TEXT.X
+EXECUTABLE = TEXT.X
 
 # *.c ソースファイル
 C_SRCS = main.c
@@ -8,9 +8,9 @@ C_SRCS = main.c
 INCLUDE_FLAGS = -I../
 
 # *.s ソースファイル
-ASM_SRCS = 
+#ASM_SRCS = 
 
 # リンク対象のライブラリファイル
-LIBS =
+#LIBS =
 
 include ../makefile

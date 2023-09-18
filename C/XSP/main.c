@@ -98,7 +98,7 @@ void main()
       Sp->y = MAX(MIN(Sp->y, 0xff), 0);
 
       //!< 通常スプライト (Put as sprite)
-      //xsp_set_st(Sp);
+      xsp_set_st(Sp);
 
       //!< メタスプライト (Put as metasprite)
       //xobj_set_st(Sp); 
