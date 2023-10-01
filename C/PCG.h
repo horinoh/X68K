@@ -23,6 +23,8 @@ enum {
 #define PCG_NO(_No) (_No & 0xff)
 #define CODE(_Flip, _Pal, _PCG) (_Flip | PAL_NO(_Pal) | PCG_NO(_PCG))
 
+#define XSP_CODE(_Flip, _Pal, _Pri) (_Flip | PAL_NO(_Pal) | _Pri)
+
 /*
 [0xeb8000, 0xeb9fff] A(8K) 
 [0xeba000, 0xebbfff] B(8K)

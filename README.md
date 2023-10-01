@@ -183,10 +183,12 @@
 
 ## [クロス開発](https://github.com/yosshin4004/xdev68k)
 - [スプライト](https://github.com/yosshin4004/x68k_xsp)
-    - ~~iocscall.inc が無いと怒られる場合、コピーして iocsall.mac から iocscall.inc を作る ~~
-        - ~~ iocsall.mac は xdev68k\include\xc\ 以下にある ~~
+<!--
+    - iocscall.inc が無いと怒られる場合、コピーして iocsall.mac から iocscall.inc を作る
+        - iocsall.mac は xdev68k\include\xc\ 以下にある
+-->
 - makefile
-  - xdev68k からコピーした makefile を以下のように改変
+  - xdev68k からコピーした makefile を以下のように改変し include して使用している
     ~~~
     #EXECUTABLE = 
 

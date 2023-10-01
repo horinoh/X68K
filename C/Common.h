@@ -1,10 +1,16 @@
 #pragma once
 #include <stdlib.h>
 
-#define COUNTOF(_Array) sizeof(_Array) / sizeof(_Array[0])
+#define COUNTOF(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 #define MIN(_Lhs, _Rhs) (_Lhs < _Rhs ? _Lhs : _Rhs)
 #define MAX(_Lhs, _Rhs) (_Lhs > _Rhs ? _Lhs : _Rhs)
 #define CLAMP(_Val, _Min, _Max) MAX(MIN(_Val, _Max), _Min)
+
+#define nullptr NULL
+#define TRUE 1
+#define true TRUE
+#define FALSE 0
+#define false FALSE
 
 //#define PI 4.0f * atan(1.0f)
 #define TO_RADIAN(_Deg) ((_Deg) * PI / 180.0f)
