@@ -203,6 +203,26 @@ void DrawWindow(int LTx, int LTy, int RBx, int RBy, int Col)
   BOX(&Box);
 }
 
+volatile int HCount = 0;
+void INTERRUPT_FUNC OnHBlank()
+{
+	++HCount;
+}
+volatile int VCount = 0;
+volatile int VWaitCount = 0;
+void INTERRUPT_FUNC OnVBlank()
+{
+	  ++VCount;
+    HCount = 0;
+
+    ++VWaitCount;
+}
+void VWait(int Wait)
+{
+  while(VWaitCount < Wait) {}
+  VWaitCount = 0;
+}
+
 void main()
 {
   const int PrevCRT = CRTMOD(-1);

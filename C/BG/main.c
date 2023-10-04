@@ -77,9 +77,6 @@ enum {
   PCG3_ID = 67,  //!< カラーバー1
 };
 
-uint64_t PALData[PAL_BLOCK_COUNT][PAL_COLOR_COUNT];
-uint8_t	PCGData[PCG_16X16_COUNT][PCG_16X16_SIZE];
-
 //#define DRAW_PALETTE
 
 void main()
@@ -187,6 +184,7 @@ void main()
     B_LOCATE(0, 0);
     printf("BG0 %03d, %03d\n", Bg0X, Bg0Y);
     printf("BG1 %03d, %03d\n", Bg1X, Bg1Y);
+    puts("TAB, SPACE\n");
   }
   
   SP_OFF();

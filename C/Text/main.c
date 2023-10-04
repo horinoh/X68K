@@ -6,6 +6,26 @@
 #include "Text.h"
 #include "Interrupt.h"
 
+volatile int HCount = 0;
+void INTERRUPT_FUNC OnHBlank()
+{
+	++HCount;
+}
+volatile int VCount = 0;
+volatile int VWaitCount = 0;
+void INTERRUPT_FUNC OnVBlank()
+{
+	  ++VCount;
+    HCount = 0;
+
+    ++VWaitCount;
+}
+void VWait(int Wait)
+{
+  while(VWaitCount < Wait) {}
+  VWaitCount = 0;
+}
+
 //#define FILL16X16
 #ifdef FILL16X16 
 //0,0,0,0,0,1,1,1, 1,1,0,0,0,0,0,0,

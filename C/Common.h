@@ -7,10 +7,6 @@
 #define CLAMP(_Val, _Min, _Max) MAX(MIN(_Val, _Max), _Min)
 
 #define nullptr NULL
-#define TRUE 1
-#define true TRUE
-#define FALSE 0
-#define false FALSE
 
 //#define PI 4.0f * atan(1.0f)
 #define TO_RADIAN(_Deg) ((_Deg) * PI / 180.0f)
@@ -41,6 +37,14 @@ static fpos_t  GetFileSize(FILE* Fp)
 enum {
   OFF = 0,
   ON = 1,
+};
+enum {
+  FALSE = 0,
+  TRUE = 1,
+};
+enum {
+  false = 0,
+  true = 1,
 };
 
 //!< CRTMOD()

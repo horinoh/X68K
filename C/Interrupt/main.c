@@ -1,9 +1,33 @@
 #include <stdio.h>
 #include <iocslib.h>
 #include <stdint.h>
+#include <math.h>
 
 #include "Common.h"
 #include "Interrupt.h"
+
+volatile int HCount = 0;
+void INTERRUPT_FUNC OnHBlank()
+{
+  //BGSCRLST(BG_IMMEDIATE | 0, ..., -1);
+  //SCROLL(0, ..., -1);
+
+	++HCount;
+}
+volatile int VCount = 0;
+volatile int VWaitCount = 0;
+void INTERRUPT_FUNC OnVBlank()
+{
+	  ++VCount;
+    HCount = 0;
+
+    ++VWaitCount;
+}
+void VWait(int Wait)
+{
+  while(VWaitCount < Wait) {}
+  VWaitCount = 0;
+}
 
 void main()
 {
@@ -33,10 +57,12 @@ void main()
     ++Inc;
     
     B_LOCATE(0, 0);
-    printf("VCount=0x%05x, Sec=%d\n", VCount, VCount / 60);
+    printf("VCount=0x%05x, HCount=%d, Sec=%d\n", VCount, HCount, VCount / 60);
     printf("Wait=%02d\n", Wait);
     printf("Inc=%03d\n", Inc);
   }
+
+  G_CLR_ON();
 
   VDISPST(NULL, ON_VBLANK, 0);
   HSYNCST(NULL);

@@ -24,8 +24,8 @@ void main()
   G_CLR_ON();
   SP_INIT();
   SP_ON();
-  BGCTRLST(0, 0, 0);
-  BGCTRLST(1, 1, 0);
+  BGCTRLST(0, 0, OFF);
+  BGCTRLST(1, 1, OFF);
 
   {
     FILE *Fp = fopen("../../x68k_xsp/SAMPLE/PANEL.PAL", "rb");
@@ -162,8 +162,8 @@ void main()
     {
       ++Sp->x;
     }
-    Sp->x = MAX(MIN(Sp->x, 0xff), 0);
-    Sp->y = MAX(MIN(Sp->y, 0xff), 0);
+    Sp->x = CLAMP(Sp->x, 0x0, 0xff);
+    Sp->y = CLAMP(Sp->y, 0x0, 0xff);
 
     //!< メタスプライトの登録
     for (uint8_t i = 0; i < COUNTOF(Sprites); ++i)
