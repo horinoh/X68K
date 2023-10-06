@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 //!< BGSCRLST() —p
 enum {
   BG_ON_VBLANK = 0,
@@ -22,3 +24,10 @@ enum {
     BG_WIDTH = 64,
     BG_HEIGHT = 64,
 };
+
+int16_t BG_SCR_VAL(int16_t rhs) {
+  while(rhs < 0) { rhs += 1024; }
+  while(rhs > 1023) { rhs -= 1024; }
+  return rhs;
+}
+#define SCR_VAL_KEEP -1

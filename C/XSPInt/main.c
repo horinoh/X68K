@@ -4,6 +4,8 @@
 #include <math.h>
 
 #include "XSP2lib.H"
+#include "PCG90.H"
+#include "PCM8Afnc.H"
 
 #include "Common.h"
 #include "Palette.h"
@@ -17,45 +19,20 @@ uint8_t PCGWork[PCG_MAX + 1];
 uint8_t PCGData[PCG_MAX][PCG_16X16_SIZE];
 uint16_t PALData[PAL_BLOCK_COUNT][PAL_COLOR_COUNT];
 const uint8_t PCGDataBG[] = {
-    //!< インベーダー
-    DOT2U16(0, 0),
-    DOT2U16(0, 1),
-    DOT2U16(1, 0),
-    DOT2U16(0, 0),
-    DOT2U16(0, 0),
-    DOT2U16(1, 1),
-    DOT2U16(1, 1),
-    DOT2U16(0, 0),
-    DOT2U16(0, 1),
-    DOT2U16(1, 1),
-    DOT2U16(1, 1),
-    DOT2U16(1, 0),
-    DOT2U16(1, 1),
-    DOT2U16(0, 1),
-    DOT2U16(1, 0),
-    DOT2U16(1, 1),
-    DOT2U16(1, 1),
-    DOT2U16(1, 1),
-    DOT2U16(1, 1),
-    DOT2U16(1, 1),
-    DOT2U16(0, 0),
-    DOT2U16(1, 0),
-    DOT2U16(0, 1),
-    DOT2U16(0, 0),
-    DOT2U16(0, 1),
-    DOT2U16(0, 1),
-    DOT2U16(1, 0),
-    DOT2U16(1, 0),
-    DOT2U16(1, 0),
-    DOT2U16(1, 0),
-    DOT2U16(0, 1),
-    DOT2U16(0, 1),
+  //!< インベーダー
+  DOT2U16(0, 0), DOT2U16(0, 1), DOT2U16(1, 0), DOT2U16(0, 0),
+  DOT2U16(0, 0), DOT2U16(1, 1), DOT2U16(1, 1), DOT2U16(0, 0),
+  DOT2U16(0, 1), DOT2U16(1, 1), DOT2U16(1, 1), DOT2U16(1, 0),
+  DOT2U16(1, 1), DOT2U16(0, 1), DOT2U16(1, 0), DOT2U16(1, 1),
+  DOT2U16(1, 1), DOT2U16(1, 1), DOT2U16(1, 1), DOT2U16(1, 1),
+  DOT2U16(0, 0), DOT2U16(1, 0), DOT2U16(0, 1), DOT2U16(0, 0),
+  DOT2U16(0, 1), DOT2U16(0, 1), DOT2U16(1, 0), DOT2U16(1, 0),
+  DOT2U16(1, 0), DOT2U16(1, 0), DOT2U16(0, 1), DOT2U16(0, 1),
 };
 
 //!< サインテーブル
 int16_t SinTable[256];
 int16_t SinIndex = 0;
-int16_t SinIndexStart = 0;
 
 //!< 割り込み
 int16_t VCount = 0;
@@ -70,10 +47,10 @@ void OnVInt()
 XSP_TIME_CHART TimeChart[COUNTOF(SinTable)];
 void OnHInt()
 {
-  //!< BG のスクロール
-  BGSCRLST(BG_IMMEDIATE | 0, SinTable[SinIndex], -1);
+  //!< BG のスクロール [0, 1024]
+  BGSCRLST(BG_IMMEDIATE | 0, BG_SCR_VAL(SinTable[SinIndex]), SCR_VAL_KEEP);
   //!< グラフィック面のスクロール
-  SCROLL(0, SinTable[SinIndex], -1);
+  SCROLL(0, SinTable[SinIndex], SCR_VAL_KEEP);
 
   SinIndex = ++SinIndex % COUNTOF(SinTable);
 
@@ -244,7 +221,7 @@ void main()
 
     B_LOCATE(0, 10);
     printf("SP %03d, %03d\n", Sp->x, Sp->y);
-    printf("Sin = %03d\n", SinIndex);
+    printf("Sin[%03d]=%03d\n", SinIndex, SinTable[SinIndex]);
   }
 
   xsp_off();

@@ -3,6 +3,8 @@
 #include <iocslib.h>
 
 #include "XSP2lib.H"
+#include "PCG90.H"
+#include "PCM8Afnc.H"
 
 #include "Common.h"
 #include "Palette.h"
@@ -63,6 +65,37 @@ void main()
 
   //!< XSP
   xsp_on();
+
+  {
+    //!< 0 128 枚点滅表示最大 384 枚
+    //!< 1 最大 512 枚 (デフォルト)
+    //!< 2 最大 512 枚優先度破綻軽減
+    xsp_mode(2);
+
+    //!< 垂直同期の間隔
+    xsp_vsync_interval_set(1);
+
+    //!< スプライト転送ラスタのオフセット値を設定します
+    //!< 通常はデフォルト値のまま変更する必要はありません
+    xsp_raster_ofs_for31khz_set(xsp_raster_ofs_for31khz_get());
+    xsp_raster_ofs_for15khz_set(xsp_raster_ofs_for15khz_get());
+
+    //!< 帰線期間割り込みを許可するよう、PCM8A の割り込みマスクを変更します
+    //!< ZMUSIC では常駐時にスイッチ -M を指定してラスタ割り込みを許可して下さい
+    pcm8a_vsyncint_on();
+
+    //!< 1 のとき、縦画面モード on
+    //!< 0 のとき、縦画面モード off
+    xsp_vertical(OFF);
+    for (uint16_t i = 0; i < COUNTOF(PCGData); i++) {
+        //!< 16x16 ドットの PCG データへのポインタ 
+	      //!<  1 のとき右 90 度回転
+        //!< -1 のとき左 90 度回転
+    	  pcg_roll90(PCGData[i], 0);
+	  }
+    //!< 8x8 ドットの PCG データへのポインタ
+    //bgpcg_roll90(BGPCGData, 1);
+  }
 
   //!< PCG データ、管理テーブルを XSP へ設定
   xsp_pcgdat_set(PCGData, PCGWork, sizeof(PCGWork));

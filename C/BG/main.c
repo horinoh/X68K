@@ -25,7 +25,7 @@
 //1, 0, 1, 1, 1, 1, 1, 1,
 //1, 1, 1, 1, 1, 1, 1, 1,
 //0, 1, 1, 1, 1, 1, 1, 0,
-uint8_t PCGData8X8[] = {
+const uint8_t PCGData8X8[] = {
   //!< インベーダー
   DOT2U16(0, 0), DOT2U16(0, 1), DOT2U16(1, 0), DOT2U16(0, 0),
   DOT2U16(0, 0), DOT2U16(1, 1), DOT2U16(1, 1), DOT2U16(0, 0),
@@ -112,11 +112,11 @@ void main()
 
   //!< PCG
   SP_CGCLR(0);
-  SP_DEFCG(PCG0_ID, PCG_PAT_8X8, &PCGData8X8[PCG0_DATA]);
-  SP_DEFCG(PCG1_ID, PCG_PAT_8X8, &PCGData8X8[PCG1_DATA]);
+  SP_DEFCG(PCG0_ID, PCG_PAT_8X8, (uint8_t*)&PCGData8X8[PCG0_DATA]);
+  SP_DEFCG(PCG1_ID, PCG_PAT_8X8, (uint8_t*)&PCGData8X8[PCG1_DATA]);
   #ifdef DRAW_PALETTE
-  SP_DEFCG(PCG2_ID, PCG_PAT_8X8, &PCGData8X8[PCG2_DATA]);
-  SP_DEFCG(PCG3_ID, PCG_PAT_8X8, &PCGData8X8[PCG3_DATA]);
+  SP_DEFCG(PCG2_ID, PCG_PAT_8X8, (uint8_t*)&PCGData8X8[PCG2_DATA]);
+  SP_DEFCG(PCG3_ID, PCG_PAT_8X8, (uint8_t*)&PCGData8X8[PCG3_DATA]);
   #endif
 
   //!< スプライト (BGのみでもオンにしないとダメみたい) (Sprite need SP_ON(), even if BG only)

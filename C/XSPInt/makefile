@@ -5,7 +5,7 @@ EXECUTABLE = XSPINT.X
 C_SRCS = main.c
 
 # ヘッダ検索パス
-INCLUDE_FLAGS = -I../ -I../../x68k_xsp/XSP/
+INCLUDE_FLAGS = -I../ -I../../x68k_xsp/XSP/ -I../../x68k_xsp/PCG90/ -I../../x68k_xsp/PCM8Afnc/
 
 # *.s ソースファイル
 #ASM_SRCS = 

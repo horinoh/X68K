@@ -3,6 +3,8 @@
 #include <iocslib.h>
 
 #include "XSP2lib.H"
+#include "PCG90.H"
+#include "PCM8Afnc.H"
 
 #include "Common.h"
 #include "Palette.h"
