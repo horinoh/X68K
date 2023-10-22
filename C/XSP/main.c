@@ -95,6 +95,9 @@ void main()
 	  }
     //!< 8x8 ドットの PCG データへのポインタ
     //bgpcg_roll90(BGPCGData, 1);
+
+    //!< BG の PCG エリアに書き込まないようにする
+    xsp_pcgmask_on(128, 255);
   }
 
   //!< PCG データ、管理テーブルを XSP へ設定

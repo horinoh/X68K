@@ -234,7 +234,7 @@
             //!< ステータス表示 (ESCで終了)
             $ZSV
             ~~~
-- [ライブラリ] (http://www.z-z-z.jp/zmusic/library/Zm302_l.lzh)
+- [ライブラリ](http://www.z-z-z.jp/zmusic/library/Zm302_l.lzh)
     - 展開
         - エミュレータ上でコンパイル (無反応に見えるが中断せずに完了を待つ)
             ~~~
@@ -247,6 +247,13 @@
             Zm302_l/ZMSC3LIB.H
             Zm302_l/ZMSC3LIB.L
             ~~~
+
+## Windows ツール
+
+- [DiskExplorer](https://hp.vector.co.jp/authors/VA013937/editdisk/index.html)
+    - このツールで .HDS (x68000のHDDイメージファイル)を Human68k HDD SCSI 形式で開くと、ファイルエクスプローラーのように操作が可能
+
+## [X68KZ](https://github.com/horinoh/X68K/tree/master/X68KZ)
 
 ## 他
 - サブモジュール更新に失敗する場合
